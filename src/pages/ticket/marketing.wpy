@@ -246,8 +246,9 @@
             }
             if(options.ussuperlevel){
                 this.ussuperlevel = options.ussuperlevel
+                console.log(options.ussuperlevel)
                 switch (options.ussuperlevel) {
-                    case 1:
+                    case '3':
                         this.nav_list = [
                             {
                                 value:1,
@@ -263,7 +264,7 @@
                             }
                         ]
                         break
-                    case 2:
+                    case '2':
                         this.nav_list = [
                             {
                                 value:1,
@@ -275,7 +276,7 @@
                             }
                         ]
                         break
-                    case 3:
+                    case '1':
                         this.nav_list = []
                         break
                 }

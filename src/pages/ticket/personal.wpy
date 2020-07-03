@@ -141,7 +141,7 @@
         </view>
         <view class="m-personal-item">
             <ul >
-                <li  @tap="toDistribute('/pages/ticket/marketing')" wx:if="{{user_info.ussuperlevel}}">
+                <li  @tap="toDistribute('/pages/ticket/marketing')" wx:if="{{user_info.ussuperlevel != 0}}">
                     <view class="m-flex-start">
                         <image src="../../images/bottom/icon-marketing.png" wx:if="{{img_src}}"  class="m-icon"></image>
                         <span>营销管理</span>
