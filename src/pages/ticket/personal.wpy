@@ -141,7 +141,7 @@
         </view>
         <view class="m-personal-item">
             <ul >
-                <li  @tap="changeRoute('/pages/ticket/marketing')" >
+                <li  @tap="toDistribute('/pages/ticket/marketing')" wx:if="{{user_info.ussuperlevel}}">
                     <view class="m-flex-start">
                         <image src="../../images/bottom/icon-marketing.png" wx:if="{{img_src}}"  class="m-icon"></image>
                         <span>营销管理</span>
@@ -275,6 +275,12 @@
             toLogin(){
                 wx.navigateTo({
                     url: '/pages/personal/login'
+                });
+            },
+            toDistribute(path){
+                let that = this
+                wx.navigateTo({
+                    url: path + '?ussuperlevel=' + that.user_info.ussuperlevel
                 });
             },
             getCell(){

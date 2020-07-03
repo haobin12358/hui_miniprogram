@@ -1,11 +1,13 @@
 
 
-const api2 = 'https://tickets.sanbinit.cn/api/' ;
+// const api2 = 'https://tickets.sanbinit.cn/api/' ;
+const api2 = 'https://beta.tickets.sanbinit.cn/api/'
 // const api2 = 'https://pre2.bigxingxing.com/api/v2/';
 // const api2 = 'https://www.bigxingxing.com/api/v2/';
 
 
-const api = 'https://tickets.sanbinit.cn' ;
+// const api = 'https://tickets.sanbinit.cn' ;
+const api = 'https://beta.tickets.sanbinit.cn'
 // const api = 'https://pre2.bigxingxing.com';
 // const api = 'https://www.bigxingxing.com';
 //登录 注册
@@ -32,7 +34,8 @@ const order_get = api2 + 'order/get';//订单详情
 const secret_usid = api2 + 'user/secret_usid'; //分享id
 const get_params = api2 + 'play/get_params';//
 
-
+const get_subcommision_index = api2 + 'subcommision/get_subcommision_index';//营销管理头部数据
+const get_user_team = api2 + 'subcommision/get_user_team'; //获取团队管理列表
 
 const img_src = 'https://tickets.sanbinit.cn/icon/';
 
@@ -41,7 +44,8 @@ const img_src = 'https://tickets.sanbinit.cn/icon/';
 //评价
 module.exports = {
   api,img_src,login,bind_phone,product_list,product_get,order_pay,product_get_promotion,get_home,update_usinfo,my_wallet,apply_cash,list_omstatus,order_list,
-  order_list_trade,user_certification,product_verify,list_mp_banner,user_identification,order_get,secret_usid,get_params
+  order_list_trade,user_certification,product_verify,list_mp_banner,user_identification,order_get,secret_usid,get_params,get_subcommision_index,
+  get_user_team
 
 
 

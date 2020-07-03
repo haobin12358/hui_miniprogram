@@ -74,6 +74,63 @@
                     }
                 }
             }
+            .distribute-list{
+                .distribute-li{
+                    display: flex;
+                    flex-flow: row;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 10rpx 0;
+                    .people-img{
+                        width: 72rpx;
+                        height: 72rpx;
+                        border-radius: 50%;
+                        margin-right: 20rpx;
+                    }
+                }
+            }
+        }
+        .radio-icon{
+            display: block;
+            width: 34rpx;
+            height: 34rpx;
+            border-radius: 50%;
+            border: 2rpx solid #CCCCCC;
+        }
+        .radio-icon-check{
+            width: 36rpx;
+            height: 36rpx;
+        }
+        .distribute-bottom{
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            flex-flow: row;
+            height: 88rpx;
+            line-height: 88rpx;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 32rpx;
+            box-sizing: border-box;
+            color: #999;
+            background-color: #fff;
+            .radio-icon, .radio-icon-check{
+                margin-right: 16rpx;
+            }
+            .distribute-bottom-right{
+                .distribute-bottom-btn{
+                    width: 240rpx;
+                    text-align: center;
+                    background-color: #FECE06;
+                    height: 88rpx;
+                    color: #333;
+                    font-size: 32rpx;
+                    margin-left: 32rpx;
+                    font-weight: 500;
+                }
+            }
         }
     }
 </style>
@@ -85,26 +142,26 @@
             <view class="m-top-content">
                 <view class="m-total-order-num">
                     <view class="m-total-order">
-                        <view class="m-num">1213</view>
+                        <view class="m-num">{{top_info.user_total_order}}</view>
                         <view>总订单数</view>
                     </view>
                     <view class="m-total-num">
-                        <view class="m-num">1213</view>
+                        <view class="m-num">{{top_info.user_total_commision}}</view>
                         <view>总收益</view>
                     </view>
                 </view>
                 <view class="m-today-order-num">
                     <view class="item">
                         <view>今日订单数</view>
-                        <view class="num">23</view>
+                        <view class="num">{{top_info.user_today_order}}</view>
                     </view>
                     <view class="item">
                         <view>今日收益</view>
-                        <view class="num">23</view>
+                        <view class="num">{{top_info.user_today_commision}}</view>
                     </view>
                     <view class="item">
                         <view>今日邀请人数</view>
-                        <view class="num">23</view>
+                        <view class="num">{{top_info.user_today}}</view>
                     </view>
                 </view>
             </view>
@@ -113,20 +170,36 @@
             <view class="m-nav">
                 <span class="{{item.value == select_nav.value ? 'active':''}}" wx:for="{{nav_list}}" wx:key="{{index}}" @tap="navTap({{item}})">{{item.label}}</span>
             </view>
-            <view class="people-list">
-                <view class="people-li">
-                    <image class="people-img"></image>
-                    <span>张张</span>
-                    <span class="num">20</span>
+            <view class="people-list" wx:if="{{select_nav.value == 1}}">
+                <view class="people-li" wx:for="{{team_list}}" wx:key="{{index}}">
+                    <image src="{{item.usheader}}" class="people-img"></image>
+                    <span>{{item.usname}}</span>
+                    <span class="num">{{item.order_list}}</span>
                 </view>
-                <view class="people-li">
-                    <image class="people-img"></image>
-                    <span>张张</span>
-                    <span class="num">20</span>
+            </view>
+            <view class="distribute-list" wx:if="{{select_nav.value == 2}}">
+                <view class="distribute-li" >
+                    <view class="m-flex-start">
+                        <image src="" class="people-img"></image>
+                        <span>13212</span>
+                    </view>
+                    <!--<image src="../../images/bottom/icon-radio-select.png" class="radio-icon-check"></image>-->
+                    <span class="radio-icon"></span>
                 </view>
             </view>
         </view>
+        <view class="distribute-bottom" wx:if="{{select_nav.value == 2}}">
+            <view class="m-flex-start">
+                <image src="../../images/bottom/icon-radio-select.png" class="radio-icon-check"></image>
+                <!--<span class="radio-icon"></span>-->
+                <span>全选</span>
+            </view>
 
+            <view class="distribute-bottom-right m-flex-end">
+                <span>已选择1人</span>
+                <view class="distribute-bottom-btn">分配至</view>
+            </view>
+        </view>
     </view>
 </template>
 <script >
@@ -157,37 +230,55 @@
                 value:1,
                 label:'团队管理'
             },
-            img_src: null,
-            user_info: {},
-            url:'',
-            new_img:null,
-            no_login:true
+            top_info: {},
+            team_list:[],
+            ussuperlevel:null
         }
         onPullDownRefresh() {
             // 上拉刷新
             if (!this.loading) {
-                this. getData();
+                this. getTop();
+                this.getData()
                 // 处理完成后，终止下拉刷新
             }
         }
-        onLoad(){
-            // this.getData();
+        onLoad(options){
+            if(options.ussuperlevel){
+                this.ussuperlevel = options.ussuperlevel
+                this.$apply()
+            }
+            this.getTop();
+            this.getData()
         }
         onShow(){
+        }
+        getTop(){
+            let that = this;
+
+            wepy.request({
+                url: api.get_subcommision_index + '?token=' +wx.getStorageSync('token'),
+                method:"get",
+                data:{}
+            }).then(res => {
+                if(res.data.status == 200){
+                    that.top_info = res.data.data;
+                    that.no_login = false;
+                    that.$apply();
+                    wx.stopPullDownRefresh();
+                }
+            })
         }
         getData(){
             let that = this;
 
             wepy.request({
-                url: api.get_home + '?token=' +wx.getStorageSync('token'),
+                url: api.get_user_team + '?token=' +wx.getStorageSync('token'),
                 method:"get",
                 data:{}
             }).then(res => {
                 if(res.data.status == 200){
-                    that.user_info = res.data.data;
-                    that.no_login = false;
+                    that.team_list = res.data.data;
                     that.$apply();
-                    wx.stopPullDownRefresh();
                 }
             })
         }
@@ -196,7 +287,18 @@
                 this.select_nav = item;
                 // this.page_info.page_num = 1;
                 this.$apply();
-                this.getData();
+                this.navSelect();
+            },
+            navSelect(){
+                switch (this.select_nav.value) {
+                    case 1:
+                        this.getData();
+                        break
+                }
+            },
+            radioChange() {
+
+
             }
 
         }

@@ -33,6 +33,7 @@
 
     config = {
       pages: [
+
           'pages/ticket/index',
           'pages/ticket/personal',
           'pages/ticket/userInfo',
