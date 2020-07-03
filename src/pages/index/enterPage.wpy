@@ -1,0 +1,318 @@
+<style scoped lang="less" rel="stylesheet/less">
+    @import "../../styles/common";
+    .m-enterPage{
+        padding-bottom: 100rpx;
+        .m-item-box{
+            .m-item-one{
+                padding: 20rpx 30rpx;
+                border-bottom: 1px solid @border-color;
+                .flex-row(space-between);
+                input{
+                    text-align: right;
+                }
+                .m-label{
+                    flex-shrink: 0;
+                    margin-right: 20rpx;
+                }
+            }
+        }
+      .m-foot{
+        position: fixed;
+        bottom:0;
+        left:0;
+        .m-agree-radio{
+          width: 100%;
+          text-align: center;
+          padding: 10rpx;
+          font-size: 20rpx;
+          .flex-row(center);
+          span{
+            color: #006FCE;
+          }
+        }
+        .m-foot-btn{
+          width: 750rpx;
+          z-index: 10;
+            display: block;
+            border: 1px solid @common-color;
+            font-size: 30rpx;
+            font-weight: 400;
+            padding: 28rpx 0;
+            text-align: center;
+
+            background-color: @common-color;
+
+
+        }
+      }
+      .m-modal{
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(0,0,0,0.16);
+        position: fixed;
+        top:0;
+        left: 0;
+        z-index: 100;
+        .m-modal-state{
+          width: 600rpx;
+          background-color: #fff;
+          padding: 40rpx 20rpx;
+          position: fixed;
+          top:0;
+          left:0;
+          right:0;
+          bottom:0;
+          margin: auto;
+          max-height: 900rpx;
+          .m-info{
+            height: 860rpx;
+          }
+        }
+      }
+    }
+
+</style>
+<template>
+    <view class="m-enterPage">
+        <view class="m-item-box">
+            <view class="m-item-one m-grey">填写报名信息</view>
+            <view class="m-item-one" wx:for="{{label_list}}" wx:key="{{index}}">
+                <span class="m-label">{{item.prename}}</span>
+                <input type="text" value="{{item.value}}" data-name="{{index}}" disabled="{{item.disabled}}" @change="inputChange" placeholder="{{'请填写'+ item.prename}}" />
+            </view>
+
+            <view class="m-item-one" wx:if="{{insurances_list.length >0}}">
+                <span class="m-label">保险</span>
+                <checkbox-group bindchange="checkboxChange">
+                    <label class="checkbox" wx:for="{{insurances_list}}" wx:key="index">
+                        <view>
+                            <checkbox value="{{item.inid}}" checked="{{item.checked}}" disabled="{{item.checked}}" color="#FFCE00"/>{{item.inname}}:¥{{item.incost}}
+                        </view>
+
+                    </label>
+                </checkbox-group>
+            </view>
+        </view>
+      <view class="m-foot">
+        <view class="m-agree-radio">
+          <checkbox-group bindchange="checkChange">
+            <label class="checkbox" >
+              <checkbox value="{{agree}}" color="#FFCE00" checked="{{agree}}"/>
+            </label>
+          </checkbox-group>我同意<span @tap="changeModal('show_rule',true)"> 旗行平台报名条款</span>
+        </view>
+        <view class="m-foot-btn" @tap="submitEnter">支付费用</view>
+      </view>
+      <view class="m-modal" wx:if="{{show_rule}}" @tap="changeModal('show_rule',false)">
+        <view class="m-modal-state">
+          <view class="m-info">
+            <htmlParser :parserName.sync="name1" :parserContent.sync="content1" />
+          </view>
+        </view>
+      </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import tip from '../../utils/tip';
+    import api from '../../api/api';
+    import htmlParser from '../../components/common/htmlParser';
+    export default class enterPage extends wepy.page {
+        config = {
+            navigationBarTitleText: '报名',
+            enablePullDownRefresh: true
+        }
+        components = {htmlParser:htmlParser}
+        data = {
+            plid:'',
+            label_list:[],
+            insurances_list: [],
+            insurances:[],
+            name1:'htmlParserName2',
+            content1:"",
+            show_rule:false,
+          agree:false
+        }
+      getRule(){
+        let that = this;
+        wepy.request({
+          url: api.get_linkcontent +'?token='+wx.getStorageSync('token') ,
+          data: {
+            lcid:'ea2b8c40-c008-11e9-8def-00163e13a3e3'
+          },
+          header: {
+            'content-type': 'application/json' // 默认值
+          }
+        }).then(res => {
+          if(res.data.status){
+            let data = res.data.data;
+            that.content1 = res.data.data.lccontent;
+            that.content1 = that.content1.replace(/&quot;/g,'');
+            that.content1 = that.content1.replace(/&nbsp;/g, '\xa0');
+            that.$apply();
+            that.$invoke('htmlParser', 'htmlParserNotice');
+          }
+        })
+      }
+        getInsurance(id){
+            let that = this;
+            wepy.request({
+                url: api.get_insurance + '?token=' +wx.getStorageSync('token'),
+                data: {
+                    plid: id || that.plid
+                }
+            }).then(res => {
+              if(res.data.status == 200){
+                for(let i=0;i<res.data.data.length;i++){
+                  if(res.data.data[i].intype == 1){
+                    res.data.data[i].checked = true;
+                    that.insurances.push(res.data.data[i].inid);
+                  }else{
+                    res.data.data[i].checked = false;
+                  }
+                }
+                that.insurances_list = res.data.data;
+                that.$apply();
+              }
+            })
+        }
+        getLabel(id){
+            let that = this;
+            wepy.request({
+                url: api.get_playrequire + '?token=' +wx.getStorageSync('token'),
+                data: {
+                    plid: id || that.plid
+                }
+            }).then(res => {
+
+              if(res.data.status == 200){
+                let data = res.data.data;
+                let _arr = [];
+                for(let i=0;i<data.length;i++){
+                  _arr.push({
+                    preid:data[i].preid,
+                    prename:data[i].prename,
+                    value:data[i].prevalue || '',
+                    disabled:data[i].prevalue ? true : false
+                  })
+                }
+                that.label_list = _arr;
+                that.$apply();
+              }
+
+            })
+        }
+        //支付
+        pay(params){
+          wx.requestPayment({
+            timeStamp: params.timeStamp,
+            nonceStr: params.nonceStr,
+            package: params.package,
+            signType: params.signType,
+            paySign: params.sign,
+            success (res) {
+
+              wx.showToast({
+                title: '报名成功',
+                icon: 'none',
+                duration: 2000
+              });
+              wx.redirectTo({
+                url: '/pages/index/manageActivity'
+              });
+
+
+            },
+            fail (res) {
+              wx.showToast({
+                title: '支付失败，请稍后再试',
+                icon: 'none',
+                duration: 2000
+              })
+            }
+          })
+        }
+        postData(){
+            let that = this;
+            tip.loading();
+            for(let i=0;i<that.label_list.length;i++){
+              delete that.label_list[i].disabled;
+            }
+
+            wepy.request({
+                url: api.play_join + '?token=' +wx.getStorageSync('token'),
+                method:"post",
+                data:{
+                    plid:that.plid,
+                    insurances:that.insurances,
+                    elvalue:that.label_list,
+                    elid:''
+                }
+            }).then(resule => {
+              if(resule.data.status == 200){
+                if(resule.data.data.redirect){
+                  wx.showToast({
+                    title: '报名成功',
+                    icon: 'none',
+                    duration: 2000
+                  });
+                  wx.redirectTo({
+                    url: '/pages/index/manageActivity'
+                  });
+                }else{
+                  let params = resule.data.data.args;
+                  that.pay(params);
+                }
+
+              }
+            })
+        }
+
+        onLoad(options) {
+            if(options.plid){
+              this.plid= options.plid;
+              this.$apply();
+
+            }
+
+
+        }
+        onShow(){
+          this.getInsurance(this.plid);
+          this.getLabel(this.plid);
+          this.getRule();
+        }
+
+        methods = {
+            checkboxChange: function(e) {
+                this.insurances = e.detail.value;
+                this.$apply();
+            },
+            inputChange(e){
+                let index = e.currentTarget.dataset.name;
+                this.label_list[index].value = e.detail.value;
+                this.$apply();
+            },
+            submitEnter(){
+              if(this.agree){
+                this.postData();
+              }else{
+                tip.error('请先同意旗行服务报名条款');
+              }
+            },
+          checkChange(e){
+            this.agree = e.detail.value[0];
+            this.$apply();
+          },
+          changeModal(name,bool){
+            if(bool == 'false'){
+              this[name] = false;
+            }else{
+              this[name] = true;
+            }
+            this.$apply();
+          },
+        }
+    }
+</script>

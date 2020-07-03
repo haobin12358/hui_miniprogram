@@ -1,0 +1,236 @@
+<style scoped lang="less" rel="stylesheet/less">
+
+  .m-select-one{
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+</style>
+<template>
+  <picker mode="multiSelector" bindchange="bindMultiPickerChange" bindcolumnchange="bindMultiPickerColumnChange" range-key="name" value="{{multiIndex}}"  range="{{multiArray}}">
+    <!--            <view class="picker">-->
+    <!--              当前选择：{{multiArray[0][multiIndex[0]]}}，{{multiArray[1][multiIndex[1]]}}，{{multiArray[2][multiIndex[2]]}}-->
+    <!--            </view>-->
+    <view class="m-select-one" @tap="areaTap" wx:if="{{!horizontal}}">
+      <span class="{{select_loc.name?'m-common':''}}">{{select_loc.name || '区域'}}</span>
+      <image src="{{img_src}}common/icon-down-solid-active.png" wx:if="{{select_loc.name}}"  class="m-down-solid"></image>
+      <image src="{{img_src}}common/icon-down-solid.png" wx:else  class="m-down-solid"></image>
+    </view>
+    <view class="m-select-one" @tap="areaTap" wx:else>
+      <span >{{select || '区域'}}</span>
+      <image src="{{img_src}}common/icon-more.png"   class="m-icon-more"></image>
+    </view>
+  </picker>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import api from '../../api/api';
+
+  export default class area extends wepy.component {
+    config = {
+      navigationBarTitleText: ''
+    };
+    components = {};
+    props={
+      horizontal:{
+        type:Boolean,
+        default:false
+      },
+      select:{
+        type:String,
+        default: ''
+      }
+    }
+    data = {
+      img_src:api.img_src,
+      multiArray:[[],[],[]],
+      multiIndex:[],
+      select_loc:{}
+    };
+    //获取省份
+    getProvince(){
+      let that = this;
+      wx.request({
+        url: api.get_provinces ,
+        data: {
+        },
+        header: {
+          'content-type': 'application/json' // 默认值
+        },
+        success: function(res) {
+          let data = res.data.data;
+          that.multiArray[0] = [];
+          if(!that.horizontal){
+            that.multiArray[0].push({
+              apid:'',
+              name:'不限'
+            });
+          }
+          for(let i =0;i<data.length;i++){
+            that.multiArray[0].push({
+              apid:data[i].apid,
+              name:data[i].apname
+            });
+          }
+          that.getCity(that.multiArray[0][0].apid);
+          that.$apply();
+        }
+      })
+    }
+    //获取市
+    getCity(id){
+      let that = this;
+      if(id){
+        wx.request({
+          url: api.get_citys ,
+          data: {
+            apid:id
+          },
+          header: {
+            'content-type': 'application/json' // 默认值
+          },
+          success: function(res) {
+            let data = res.data.data;
+            that.multiArray[1] = [];
+            if(!that.horizontal){
+              that.multiArray[1].push({
+                acid:'',
+                name:'不限'
+              });
+            }
+            if(data.length > 0){
+              for(let i =0;i<data.length;i++){
+                that.multiArray[1].push({
+                  acid:data[i].acid,
+                  name:data[i].acname
+                });
+              }
+              that.getCountry(that.multiArray[1][0].acid);
+            }
+
+            that.$apply();
+          }
+        })
+      }else{
+        that.multiArray[1] = [];
+        if(!that.horizontal){
+          that.multiArray[1].push({
+            acid:'',
+            name:'不限'
+          });
+        }
+        that.getCountry(that.multiArray[1][0].acid);
+        that.$apply();
+      }
+
+    }
+    //获取区县
+    getCountry(id){
+      let that = this;
+      if(id){
+        wx.request({
+          url: api.get_areas ,
+          data: {
+            acid:id || ''
+          },
+          header: {
+            'content-type': 'application/json' // 默认值
+          },
+          success: function(res) {
+            let data = res.data.data;
+            that.multiArray[2] = [];
+            if(!that.horizontal){
+              that.multiArray[2].push({
+                aaid:'',
+                name:'不限'
+              });
+            }
+            for(let i =0;i<data.length;i++){
+              that.multiArray[2].push({
+                aaid:data[i].aaid,
+                name:data[i].aaname
+              });
+            }
+
+            that.$apply();
+          }
+        })
+      }else{
+        that.multiArray[2] = [];
+        if(!that.horizontal){
+          that.multiArray[2].push({
+            aaid:'',
+            name:'不限'
+          });
+        }
+        that.$apply();
+      }
+
+    }
+
+    onLoad(options) {
+      this.getProvince();
+    }
+
+    methods = {
+      //省市区确定
+      bindMultiPickerChange(e){
+        this.multiIndex = e.detail.value;
+        for(let i=0;i<this.multiIndex.length;i++){
+          if(this.multiIndex[i] == null){
+            this.multiIndex[i] = 0;
+          }
+        }
+        if(!this.multiIndex[2]){
+          if(!this.multiIndex[1]){
+            this.select_loc = this.multiArray[0][this.multiIndex[0]];
+          }else{
+            this.select_loc = this.multiArray[1][this.multiIndex[1]];
+          }
+        }else{
+          this.select_loc = this.multiArray[2][this.multiIndex[2]];
+        }
+        this.$apply();
+        // console.log(this.select_loc)
+        if(this.select_loc.apid == '' && this.select_loc.name == '不限'){
+          this.select_loc = {}
+        }
+        if(this.horizontal){
+          let obj = [];
+          for(let i=0;i<this.multiIndex.length;i++){
+            obj.push(this.multiArray[i][this.multiIndex[i]])
+          }
+          console.log(obj)
+          this.$emit('citySelect',obj);
+        }else{
+          this.$emit('citySelect',this.select_loc);
+        }
+
+
+      },
+      //省市区每列变化
+      bindMultiPickerColumnChange(e){
+
+        let data = this.multiArray[e.detail.column][e.detail.value];
+        switch (e.detail.column) {
+          case 0:
+            this.getCity(data.apid);
+            break;
+          case 1:
+            this.getCountry(data.acid);
+            break;
+        }
+
+      },
+      //点击区域选择
+      areaTap(){
+        if(this.multiArray[0].length == 0 ){
+          this.getProvince();
+        }
+      }
+    };
+  }
+</script>

@@ -1,0 +1,1107 @@
+<style  lang="less" rel="stylesheet/less">
+    @import "../../styles/common";
+    .m-activityDetail{
+      padding-bottom: 240rpx;
+      .m-btn{
+        width: 100%;
+        background-color: #fff;
+        padding-top: 10rpx;
+        text-align: center;
+        span{
+          display: inline-block;
+          width: 300rpx;
+          height: 60rpx;
+          line-height: 60rpx;
+          background-color: @common-color;
+        }
+
+      }
+      .m-scheduling-info{
+          padding: 30rpx;
+        border-bottom: 1px solid @border-color;
+          .m-scheduling-name{
+              font-weight: 600;
+              width: 560rpx;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+          }
+          .m-price{
+              color: #EB0000;
+              font-weight: 600;
+              font-size: 32rpx;
+          }
+          .m-name-title{
+              margin-bottom: 25rpx;
+          }
+          .m-name{
+              max-width: 300rpx;
+              overflow: hidden;
+              text-overflow:ellipsis;
+              white-space: nowrap;
+          }
+      }
+      .m-img-box{
+        width: 100%;
+        height: 420rpx;
+        position: relative;
+        .m-icon-share{
+          position: absolute;
+          top: 20rpx;
+          right: 20rpx;
+          width: 60rpx;
+          height: 60rpx;
+        }
+      }
+      .m-scheduling-img{
+          display: block;
+          width: 100%;
+          height: 420rpx;
+        /*height: auto;*/
+      }
+      .m-activityDetail-info{
+          li{
+              padding: 20rpx 30rpx;
+              border-bottom: 1px solid @border-color;
+              .flex-row(space-between);
+              .m-label{
+                  color: @grey-color;
+                  /*width: 162rpx;*/
+                  text-align: left;
+                flex-shrink: 0;
+                  .flex-col(space-between);
+                  .m-line{
+                      color: @common-color;
+                  }
+              }
+            .m-icon{
+              width: 30rpx;
+              height: 30rpx;
+              margin-left: 10rpx;
+            }
+            .m-rule{
+              max-width: 410rpx;
+            }
+            .m-max-width{
+              max-width: 450rpx;
+            }
+              .m-info-text{
+                  width: 300rpx;
+                  .flex-col(space-between);
+                  .m-line{
+                      color: @common-color;
+                  }
+              }
+              &.m-no-flex{
+                  display: flex;
+                  flex-flow: column;
+                  justify-content: flex-start;
+                  align-items: flex-start;
+              }
+              .m-detail-text{
+                  /*text-indent: 2em;*/
+                  line-height: 56rpx;
+                  font-size: 24rpx;
+              }
+          }
+      }
+      .m-activity-scheduling{
+          .m-activity-scheduling-h3{
+              font-size: 32rpx;
+              padding: 14rpx 30rpx 0;
+          }
+          .m-scheduling-detail{
+              padding-bottom: 20rpx;
+              .m-open{
+                  width: 100%;
+                  text-align: center;
+                  color: @grey-color;
+              }
+          }
+      }
+      .m-info{
+          padding: 20rpx 30rpx;
+          line-height: 42rpx;
+          image{
+              width: 690rpx;
+              margin: 0;
+              /*height: 388rpx!important;*/
+          }
+      }
+      .m-scheduling-foot{
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          border-top: 1px solid @border-color;
+          z-index: 10;
+          width: 100%;
+          .m-icon-list{
+              .flex-row(space-around);
+              width: 750rpx;
+              padding: 30rpx 0;
+              background-color: #fff;
+              .m-icon-img{
+                  display: inline-block;
+                  width: 44rpx;
+                  height: 44rpx;
+              }
+          }
+          .m-scheduling-btn{
+              padding: 30rpx 0;
+              width: 750rpx;
+              background-color: @common-color;
+              font-size: 30rpx;
+              font-weight: 500;
+              text-align: center;
+            &.active{
+              background-color: #fff;
+              border: 1px solid @common-color;
+
+            }
+          }
+
+      }
+      .m-circle-box{
+        padding: 20rpx 30rpx;
+        .m-border-back{
+          font-size: 32rpx;
+          font-weight: 500;
+        }
+      }
+      .m-image-box{
+        .flex-row(flex-start);
+        flex-wrap: wrap;
+        padding: 40rpx 0 10rpx;
+        box-sizing: border-box;
+        width: 100%;
+        max-height: 315rpx;
+        overflow: hidden;
+        .m-one-image{
+          position: relative;
+          width: 135rpx;
+          height: 145rpx;
+          margin-right: 4rpx;
+          margin-bottom: 4rpx;
+          &:nth-child(5n){
+            margin-right: 0;
+          }
+          image{
+            width: 135rpx;
+            height: 135rpx;
+            /*background-color: #0BB20C;*/
+          }
+          .m-icon-play{
+            width: 80rpx;
+            height: 80rpx;
+            position: absolute;
+            top:0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+          }
+          .m-image-more{
+            position: absolute;
+            top:0;
+            left:0;
+            width: 135rpx;
+            height: 135rpx;
+            background-color: rgba(0,0,0,0.2);
+            .flex-col(center);
+            color: #fff;
+            font-size: 28rpx;
+            font-weight: 500;
+            line-height: 40rpx;
+          }
+        }
+      }
+      .m-modal{
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(0,0,0,0.16);
+        position: fixed;
+        top:0;
+        left: 0;
+        z-index: 100;
+        &.m-video{
+          background-color: rgba(0,0,0,1);
+          color: #c1c1c1;
+          display: block;
+          .m-btn{
+            display: block;
+            padding: 20rpx;
+            background-color: #000;
+            text-align: right;
+          }
+          video{
+            width: 750rpx;
+            height: 90vh;
+          }
+        }
+        .m-grey{
+          font-size: 24rpx;
+        }
+        .m-modal-state{
+          width: 690rpx;
+          box-sizing: border-box;
+          padding: 30rpx;
+          background-color: #fff;
+          position: fixed;
+          top: 0;
+          left:0;
+          right: 0;
+          bottom: 0;
+          margin: auto;
+          text-align: center;
+          height: 750rpx;
+          .m-row{
+            padding: 20rpx 0;
+            border-bottom: 1px solid @border-color;
+            .flex-row(space-between);
+            .m-input{
+              text-align: right;
+              &.m-input-s{
+                width: 200rpx;
+              }
+            }
+          }
+          .m-btn-box{
+            margin-top: 120rpx;
+            span{
+              border: 1px solid @common-color;
+              color: @common-color;
+              display: inline-block;
+              padding: 20rpx 120rpx;
+              &.active{
+                background-color: @common-color;
+                color: #000;
+              }
+            }
+          }
+        }
+        .m-state{
+          width: 400rpx;
+          height: 400rpx;
+          text-align: center;
+          background-color: #fff;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          margin: auto;
+          box-sizing: border-box;
+          padding: 0 30rpx;
+          &.m-small{
+            height: 520rpx;
+            .m-grey{
+              font-size: 28rpx;
+            }
+            .m-dashed-btn{
+              margin-top: 50rpx;
+              width: 300rpx;
+              height: 60rpx;
+              line-height: 60rpx;
+              text-align: center;
+              border: 1px solid @common-color;
+              color: @common-color;
+            }
+          }
+          .flex-col(center);
+          .m-result-img{
+            width: 120rpx;
+            height: 120rpx;
+            margin-bottom:30rpx ;
+          }
+        }
+      }
+      .m-share-fixed{
+        width: 110rpx;
+        background-color: #fff;
+        position: fixed;
+        right: 30rpx;
+        bottom:200rpx;
+        box-shadow:0 3rpx 30rpx rgba(0,0,0,0.1);
+        border-radius: 10rpx;
+        font-size: 20rpx;
+        font-weight: 300;
+        .flex-col(center);
+        .m-logo{
+          width: 80rpx;
+          height: 80rpx;
+        }
+      }
+
+    }
+
+</style>
+<template>
+    <view class="m-activityDetail" wx:if="{{detail}}">
+<!--      <view class="m-alert-text" wx:if="{{detail.is_join}}">-->
+<!--        <span>报名成功！</span>-->
+<!--        <span class="m-alert-btn" @tap="changeRoute('/pages/index/enterTeam')">进入团队</span>-->
+<!--      </view>-->
+      <view class="m-btn" wx:if="{{detail.plstatus == 4 && detail.playtype && !no_token}}"><span @tap="acceptTap">确认承接</span></view>
+      <view class="m-btn" wx:if="{{detail.plstatus == 5 && !detail.playtype && !no_token}}"><span @tap="pay">确认并支付</span></view>
+      <view class="m-img-box">
+        <image src="{{detail.plimg}}"   @tap="previewImg({{detail.plimg}})" class="m-scheduling-img"></image>
+        <image src="{{img_src}}index/icon-share.png" class="m-icon-share" @tap="changeModal('show_share',true)"></image>
+      </view>
+
+        <view class="m-scheduling-info">
+            <view class="m-flex-between m-name-title">
+                <span class="m-scheduling-name">{{detail.plname}}</span>
+                <span class="m-price">¥ {{detail.playsum}}</span>
+            </view>
+            <view class="m-flex-between ">
+                <span>出游时间：{{detail.time}}</span>
+                <span class="m-name">组织者：{{detail.plcreate}}</span>
+            </view>
+        </view>
+
+        <ul class="m-activityDetail-info">
+            <li>
+                <view class="m-label">
+                    <p>开始时间</p>
+                    <p class="m-line">|</p>
+                    <p>结束时间</p>
+                </view>
+                <view class="m-info-text">
+                    <p>{{detail.plstarttime}}</p>
+                    <p class="m-line">|</p>
+                    <p>{{detail.plendtime}}</p>
+                </view>
+            </li>
+            <li>
+                <view class="m-label">活动地点</view>
+                <view class="m-max-width">{{detail.pllocation}}</view>
+            </li>
+            <li>
+                <view class="m-label">参与人数</view>
+              <view class="m-flex-end" @tap="lookNum('/pages/index/joinNum')">
+                   <span>
+                       <span class="m-common">{{detail.enternum}}</span>/{{detail.plnum}}
+                   </span>
+                <image src="{{img_src}}common/icon-right.png" class="m-icon-more" alt="" />
+              </view>
+            </li>
+            <li>
+                <view class="m-label">活动费用</view>
+                <view >{{detail.playsum}}</view>
+            </li>
+            <li>
+                <view class="m-label">推荐携带物品</view>
+                <view class="m-max-width">{{detail.plproducts}}</view>
+            </li>
+          <li wx:if="{{rule}}">
+            <view class="m-label">退款信息</view>
+            <view class="m-flex-end" >
+              <view class="m-rule">{{rule}}</view>
+              <image src="{{img_src}}common/icon-question.png" class="m-icon" alt="" @tap="showRule"/>
+            </view>
+          </li>
+        </ul>
+        <view class="m-activity-scheduling">
+            <h3 class="m-activity-scheduling-h3">
+                <span class="m-border-back">行程介绍</span>
+            </h3>
+            <view class="m-scheduling-detail">
+                <view class="m-info"  wx:if="{{show_open}}">
+                    <htmlParser :parserName.sync="name1" :parserContent.sync="content1" />
+<!--                    <template id="wxParse" data="{{wxParseData:htmlParserName2.nodes}}"></template>-->
+                </view>
+                <view class="m-open" wx:if="{{!show_open}}" @tap="openClick(true)">
+                    <span>点击展开</span>
+                    <image src="{{img_src}}common/icon-down.png" class="m-icon-down" alt="" />
+                </view>
+                <view class="m-open" wx:if="{{show_open}}"  @tap="openClick(false)">
+                    <span>点击收起</span>
+                    <image src="{{img_src}}common/icon-up.png" class="m-icon-down" alt="" />
+                </view>
+            </view>
+        </view>
+      <view class="m-circle-box">
+        <view class="m-flex-between">
+          <span class="m-border-back">团队相册</span>
+        </view>
+        <view class="m-no-data" wx:if="{{photo_album.length == 0}}">暂无相片</view>
+        <view class="m-image-box" wx:if="{{photo_album.length>0 }}">
+          <view class="m-one-image" wx:for="{{photo_album}}" wx:key="{{index}}">
+            <image src="{{item.url}}" @tap="previewImg({{item.url}})" wx:if="{{item.type == 'image'}}"></image>
+            <image src="{{item.thumbnail}}" wx:if="{{item.type == 'video'}}" @tap="playVideo({{item}})"></image>
+            <image src="{{img_src}}common/icon-play.png" wx:if="{{item.type == 'video'}}" @tap="playVideo({{item}})" class="m-icon-play"></image>
+            <view class="m-image-more" wx:if="{{ (photo_album.length-1 > 10 && index == 9 )|| index == photo_album.length-1 }}" @tap.stop="changeRoute('/pages/index/imageList')">
+              <view>{{photo_album.length}}</view>
+              <view>...</view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="m-circle-box">
+        <view class="m-flex-between">
+          <span class="m-border-back">团队广场</span>
+        </view>
+        <view class="m-no-data" wx:if="{{list_data.length == 0}}">暂无动态</view>
+        <circle :list.sync="list_data"></circle>
+      </view>
+       <view class="m-scheduling-foot" wx:if="{{!no_token}}">
+            <view class="m-btn" wx:if="{{detail.plstatus < 2 && !detail.playtype}}"><span @tap="changeActivity">转让活动</span></view>
+           <view class="m-scheduling-btn" wx:if="{{detail.joinstatus && detail.playtype}}" @tap="toEnter('/pages/index/enterPage')">我要报名</view>
+         <view class="m-scheduling-btn active" wx:if="{{detail.repaystatus}}" @tap="postReplay">继续支付</view>
+<!--         <view class="m-scheduling-btn" wx:if="{{detail.is_join}}" >已报名</view>-->
+           <ul class="m-icon-list" wx:if="{{!detail.playtype}}">
+               <li wx:if="{{detail.plstatus > 1}}" @tap="changeRoute('/pages/index/signIn')">
+                   <image src="{{img_src}}index/icon-sign-in-active.png" class="m-icon-img"></image>
+               </li>
+               <li wx:else>
+                   <image src="{{img_src}}index/icon-sign-in.png" class="m-icon-img"></image>
+               </li>
+               <li  @tap="editNotice">
+                   <image src="{{img_src}}index/icon-broad-active.png" class="m-icon-img"></image>
+               </li>
+<!--               <li wx:else>-->
+<!--                   <image src="{{img_src}}index/icon-broad.png" class="m-icon-img"></image>-->
+<!--               </li>-->
+               <li wx:if="{{detail.editstatus}}">
+                   <image src="{{img_src}}index/icon-close-active.png" class="m-icon-img" @tap="closePlay"></image>
+               </li>
+               <li wx:else>
+                   <image src="{{img_src}}index/icon-close.png" class="m-icon-img"></image>
+               </li>
+               <li wx:if="{{detail.editstatus}}">
+                   <image src="{{img_src}}index/icon-edit.png" class="m-icon-img" @tap="editTap"></image>
+               </li>
+               <li wx:if="{{detail.editstatus}}">
+                   <image src="{{img_src}}index/icon-delete-active.png" class="m-icon-img" @tap="deletePlay"></image>
+               </li>
+               <li>
+                   <button class="m-share-btn"  open-type="share" ><image src="{{img_src}}index/icon-share-active.png" class="m-icon-img"></image></button>
+               </li>
+           </ul>
+
+       </view>
+
+      <view class="m-modal" wx:if="{{show_modal}}">
+        <view class="m-modal-state">
+          <view class="m-row m-grey">填写转让对象信息</view>
+          <view class="m-row">
+            <span class="m-label">姓名</span>
+            <input type="text" class="m-input" value="{{form_data.usrealname}}" data-name="usrealname" bindinput="inputChange" placeholder="请输入姓名"/>
+          </view>
+          <view class="m-row">
+            <span class="m-label">手机号</span>
+            <input type="text" class="m-input" value="{{form_data.ustelphone}}" data-name="ustelphone" bindinput="inputChange" placeholder="请输入手机号"/>
+          </view>
+          <view class="m-row">
+            <span class="m-label">身份证号</span>
+            <input type="text" class="m-input" value="{{form_data.usidentification}}" data-name="usidentification" bindinput="inputChange" placeholder="请输入身份证号"/>
+          </view>
+          <view class="m-row">
+            <span class="m-label">转让费用<span class="m-grey">(支付转让对象的费用)</span></span>
+            <input type="digit" class="m-input m-input-s" value="{{form_data.moprice}}" data-name="moprice" bindinput="inputChange" placeholder="0"/>
+          </view>
+          <view class="m-btn-box">
+            <span @tap="cancelModal('show_modal')">取消</span>
+            <span class="active" @tap="sureTap">确定</span>
+          </view>
+        </view>
+      </view>
+      <view class="m-modal" wx:if="{{show_result}}" @tap="cancelModal('show_result')">
+        <view class="m-state">
+          <view>
+            <image src="{{img_src}}common/result.png" class="m-result-img"></image>
+            <view>转让人不存在</view>
+            <view class="m-grey">请确认转让对象信息</view>
+          </view>
+        </view>
+      </view>
+      <view class="m-modal" wx:if="{{show_look}}" @tap="cancelModal('show_look')">
+        <view class="m-state m-small">
+          <view>
+            <image src="{{img_src}}common/result-bag.png" class="m-result-img"></image>
+          </view>
+          <view>转让协议 <span class="m-grey">可以在</span></view>
+          <view>个人中心-协议管理<span class="m-grey">中查看</span></view>
+          <view class="m-dashed-btn" @tap.stop="lookKnow">我知道了</view>
+        </view>
+      </view>
+      <view class="m-modal m-video" wx:if="{{show_video}}">
+        <view class="m-flex-end">
+          <span class="m-btn" @tap="changeModal('show_video',false)">关闭</span>
+        </view>
+        <video src="{{video_url}}" autoplay="true"></video>
+      </view>
+
+      <view class="m-share-fixed" @tap.stop="changeRoute('/pages/index/shareEdit')" wx:if="{{!detail.playtype}}">
+        <image class="m-logo" src="{{img_src}}common/logo.png"></image>
+        <view>分享团队</view>
+        <view>精彩内容</view>
+      </view>
+
+     <share :show.sync="show_share" @changeModal.user="changeModal" :params.sync="params" :plid.sync="plid"></share>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import circle from '../../components/common/circle';
+    import tip from '../../utils/tip';
+    import api from '../../api/api';
+    import htmlParser from '../../components/common/htmlParser';
+    import WxParse from '../../wxParse/wxParse';
+    import share from '../../components/common/share';
+    export default class lookActivity extends wepy.page {
+        config = {
+            navigationBarTitleText: '',
+            enablePullDownRefresh: true
+        }
+        components = {circle:circle,    htmlParser:htmlParser,share:share}
+        data = {
+            img_src:null,
+            detail:null,
+            name1:'htmlParserName1',
+            detail_info:null,
+            content1:"",
+            show_open:false,
+            plid:'0d85db48-9bd6-11e9-8e38-0242ac110002',
+            show_modal:false,
+            show_result:false,
+          show_look:false,
+          form_data:{
+            usrealname:'',
+            usidentification:'',
+            ustelphone:'',
+            moprice:0,
+            args:null
+          },
+          rule:'',
+          photo_album:[],
+          list_data:[],
+          page_info:{
+            page_num: 1,
+            page_size: 10
+          },
+          total_count:0,
+          video_url:'',
+          show_video:false,
+          show_share:false,
+          params:'page=/pages/index/lookActivity',
+          secret_usid:'',
+          no_token:true
+        }
+      getPhoto(id){
+        let that = this;
+        tip.loading();
+        wepy.request({
+          url: api.get_team_album + '?token=' +wx.getStorageSync('token'),
+          data: {
+            plid:id || that.plid
+          }
+        }).then(res => {
+          if(res.data.status == 200){
+            let data = res.data.data;
+            that.photo_album = data;
+            that.$apply();
+
+          }
+        })
+      }
+        //获取活动详情
+        getDetail(id){
+          console.log(wx.getStorageSync('secret_usid'),'lod')
+            let that = this;
+            tip.loading();
+            wepy.request({
+                url: api.get_play + '?token=' +wx.getStorageSync('token'),
+                data: {
+                    plid:id || that.plid,
+                  secret_usid:wx.getStorageSync('secret_usid')
+                },
+                header: {
+                    'content-type': 'application/json' // 默认值
+                }
+            }).then(res => {
+              if(res.data.status == 200){
+                let data = res.data.data;
+                that.detail_info = data;
+                if(data.joinstatus){
+                  wx.setNavigationBarTitle({
+                    title: '活动报名'
+                  })
+                }else{
+                  wx.setNavigationBarTitle({
+                    title: '我创建的'
+                  })
+                }
+                data.time = data.plstarttime.slice(0,7) +'/' + data.plstarttime.slice(8,10) + '-' + data.plendtime.slice(5,7) +'/' + data.plendtime.slice(8,10)
+                data.pllocation = data.pllocation.join('-');
+                data.plproducts = data.plproducts.join('、');
+                that.content1 = res.data.data.plcontent;
+                that.content1 = that.content1.replace(/&quot;/g,'');
+                that.content1 = that.content1.replace(/&nbsp;/g, '\xa0');
+                that.detail = data;
+                // WxParse.wxParse('htmlParserName2','html',res.data.data.plcontent,that,0);
+                that.$apply();
+                that.$invoke('htmlParser', 'htmlParserNotice');
+              }
+            })
+        }
+        //获取退款
+        getDiscounts(id){
+          let that = this;
+          wepy.request({
+            url: api.get_discount + '?token=' +wx.getStorageSync('token'),
+            data: {
+              plid: id
+            },
+            header: {
+              'content-type': 'application/json' // 默认值
+            }
+          }).then(res => {
+            if(res.data.status == 200){
+              that.rule = res.data.data.role;
+              that.$apply();
+            }
+          })
+        }
+      getData(id){
+        let that = this;
+        tip.loading();
+        wepy.request({
+          url: api.get_team_travelrecord +'?token='+wx.getStorageSync('token') ,
+          data: {
+            plid:id  || that.plid,
+            page_num:that.page_info.page_num,
+            page_size: that.page_info.page_size,
+          },
+          header: {
+            'content-type': 'application/json' // 默认值
+          }
+        }).then(res => {
+          if(res.data.status == 200){
+            let data = res.data.data;
+            if(that.page_info.page_num >1){
+              that.list_data = that.list_data.concat(data);
+            }else{
+              that.list_data = data;
+            }
+            for(let i=0;i<that.list_data.length;i++){
+              if(that.list_data[i].picture){
+                if(that.list_data[i].picture.indexOf('https://') < 0){
+                  that.list_data[i].picture = api.api + that.list_data[i].picture;
+                }
+              }
+              if(that.list_data[i].trtype == 2){
+                if(that.list_data[i].showtype == 'image'){
+                  for(let a =0;a<that.list_data[i].image.length;a++){
+                    if(that.list_data[i].image[a].indexOf('https://') < 0){
+                      that.list_data[i].image[a] = api.api +that.list_data[i].image[a]
+                    }
+                  }
+                }
+                if(that.list_data[i].showtype == 'video'){
+                  if(that.list_data[i].video.url.indexOf('https://') < 0){
+                    that.list_data[i].video.url = api.api + that.list_data[i].video.url;
+                  }
+                  if(that.list_data[i].video.thumbnail.indexOf('https://') < 0){
+                    that.list_data[i].video.thumbnail = api.api + that.list_data[i].video.thumbnail;
+                  }
+                }
+              }
+            }
+            that.total_count = res.data.total_count;
+            that.$apply();
+          }
+        })
+      }
+        //修改活动
+        postData(status){
+            let that = this;
+            tip.loading();
+            if(status){
+                that.detail_info.plstatus = status;
+                that.detail_info.pllocation = that.detail_info.pllocation.split('-');
+                that.detail_info.plproducts = that.detail_info.plproducts.split('、');
+            }
+
+            wepy.request({
+                url: api.set_play + '?token=' +wx.getStorageSync('token'),
+                method:"post",
+                data:that.detail_info
+            }).then(resule => {
+              if(resule.data.status == 200){
+                wx.navigateTo({
+                  url: '/pages/index/manageActivity'
+                });
+              }
+            })
+        }
+        //获取支付参数
+        getPay(){
+          let that = this;
+          wepy.request({
+            url: api.payment + '?token=' +wx.getStorageSync('token'),
+            method:"post",
+            data:{
+              plid:that.plid
+            }
+          }).then(resule => {
+            if(resule.data.status == 200){
+              if(resule.data.data.redirect){
+                wx.showToast({
+                  title: '支付成功',
+                  icon: 'none',
+                  duration: 1000
+                });
+                that.show_look = true;
+                that.$apply();
+              }else{
+                that.payData(resule.data.data.args);
+              }
+
+            }
+          })
+        }
+        //调起微信支付
+        payData(params){
+          let that = this;
+          wx.requestPayment({
+            timeStamp: params.timeStamp,
+            nonceStr: params.nonceStr,
+            package: params.package,
+            signType: params.signType,
+            paySign: params.sign,
+            success (res) {
+              wx.showToast({
+                title: '支付成功',
+                icon: 'none',
+                duration: 1000
+              });
+              that.show_look = true;
+              that.$apply();
+
+            },
+            fail (res) {
+              wx.showToast({
+                title: '支付失败，请稍后再试',
+                icon: 'none',
+                duration: 2000
+              })
+            }
+          })
+        }
+      //继续支付
+      pay(params){
+        wx.requestPayment({
+          timeStamp: params.timeStamp,
+          nonceStr: params.nonceStr,
+          package: params.package,
+          signType: params.signType,
+          paySign: params.sign,
+          success (res) {
+
+            wx.showToast({
+              title: '报名成功',
+              icon: 'none',
+              duration: 2000
+            });
+            wx.redirectTo({
+              url: '/pages/index/manageActivity'
+            });
+
+
+          },
+          fail (res) {
+            wx.showToast({
+              title: '支付失败，请稍后再试',
+              icon: 'none',
+              duration: 2000
+            })
+          }
+        })
+      }
+      getId(){
+        let that = this;
+        wepy.request({
+          url:api.secret_usid + '?token=' +wx.getStorageSync('token'),
+          method:"get",
+          data:{}
+        }).then(resule => {
+          if(resule.data.status == 200){
+            that.secret_usid = resule.data.data.secret_usid;
+            this.params = `page=/pages/index/lookActivity&plid=${that.plid}&secret_usid=${that.secret_usid}`;
+            that.$apply();
+          }
+        })
+      }
+      onReachBottom() {
+        // 下拉触底，先判断是否有请求正在进行中
+        // 以及检查当前请求页数是不是小于数据总页数，如符合条件，则发送请求
+        if(!this.loading && this.total_count > this.list_data.length) {
+          this.page_info.page_num += 1;
+          this.$apply();
+          this.getData();
+        }
+      }
+
+      onShareAppMessage(res) {
+        if (res.from === 'button') {
+
+        }
+        let that = this;
+        let params = `?page=/pages/index/lookActivity&plid=${that.plid}&secret_usid=${that.secret_usid}`
+        // let params = '?scene=params=12'
+        return {
+          title: this.detail.plname,
+          path: '/pages/index/index'+params,
+          success: function (res) {
+            console.log('成功', res)
+          }
+        }
+      }
+        onLoad(options) {
+
+            if(options.plid){
+                this.plid = options.plid;
+                this.img_src = api.img_src;
+                this.$apply();
+            }
+            if(wx.getStorageSync('token')){
+              this.getId();
+              this.no_token = false;
+              this.$apply();
+            }
+            wx.showShareMenu({
+                withShareTicket: true
+            })
+        }
+        onShow(){
+          this.getDetail(this.plid);
+          this.getDiscounts(this.plid);
+          this.getPhoto(this.plid);
+          this.getData(this.plid);
+        }
+
+        methods = {
+          previewImg(item){
+            let that = this;
+            console.log(item)
+            wx.previewImage({
+              current: item, // 当前显示图片的http链接
+              urls: [item] // 需要预览的图片http链接列表
+            })
+          },
+            openClick(bool){
+                if(bool == 'false'){
+                    this.show_open = false;
+                }else{
+                    this.show_open = bool;
+                }
+
+                this.$apply();
+            },
+            //报名
+            toEnter(v){
+                let that = this;
+                // console.log(that.plid)
+                wx.navigateTo({
+                    url: v + '?plid=' +that.plid
+                });
+            },
+            //参与人数
+            lookNum(v){
+              let that = this;
+              wx.navigateTo({
+                url: v + '?plid=' +that.plid + '&playtype=' + that.detail.playtype
+              });
+            },
+            //编辑
+            editTap(){
+                let that = this;
+                console.log(that)
+                wx.navigateTo({
+                    url: '/pages/index/editActivity' + '?plid=' +that.plid
+                });
+            },
+            //删除
+            deletePlay(){
+                let that = this;
+                wx.showModal({
+                    title: '提示',
+                    content: '确定要删除当前活动吗？',
+                    success (res) {
+                        if (res.confirm) {
+                            that.detail_info.delete = true;
+                            that.postData();
+                            that.$apply();
+                        } else if (res.cancel) {
+
+                        }
+                    }
+                })
+                // this.postData();
+            },
+        //    关闭
+            closePlay(){
+                let that = this;
+                wx.showModal({
+                    title: '提示',
+                    content: '确定要关闭当前活动吗？',
+                    success (res) {
+                        if (res.confirm) {
+                            that.postData(3);
+                            that.$apply();
+                        } else if (res.cancel) {
+
+                        }
+                    }
+                })
+            },
+        //  活动公告
+          editNotice(){
+            let that = this;
+            wx.navigateTo({
+              url: '/pages/index/setNotice' + '?plid=' +that.plid
+            });
+          },
+
+          //关闭弹框
+          cancelModal(name){
+              this[name] = false;
+              this.$apply();
+          },
+          //转让确认
+          sureTap(){
+            let that = this;
+            let params = that.form_data;
+            params.plid = that.plid;
+            wepy.request({
+              url: api.make_over + '?token=' +wx.getStorageSync('token'),
+              method:"post",
+              data:that.form_data,
+            }).then(resule => {
+              if(resule.data.status == 200){
+                tip.success('转让成功，等待承接人确认');
+                wx.navigateTo({
+                  url: '/pages/index/manageActivity'
+                });
+              }else if(resule.data.status == 405){
+                // that.show_result = true;
+                that.$apply();
+              }
+            })
+
+
+          },
+          //承接
+          acceptTap(){
+            let that = this;
+            let params = {};
+            params.plid = that.plid;
+            params.mostatus = 1;
+            wepy.request({
+              url: api.undertake + '?token=' +wx.getStorageSync('token'),
+              method:"post",
+              data:params,
+            }).then(resule => {
+              if(resule.data.status == 200){
+                tip.success('承接成功');
+                that.detail.plstatus = 5;
+                // that.args = resule.data.data;
+                // that.payData();
+                that.$apply();
+                // wx.navigateTo({
+                //   url: '/pages/index/manageActivity'
+                // });
+
+              }
+            })
+
+          },
+          //确定并支付
+          pay(){
+            this.getPay();
+          },
+          toPAY(){
+
+          },
+          //调起转让信息
+          changeActivity(){
+            this.show_modal = true;
+            this.$apply();
+          },
+          inputChange(e){
+            let name = e.currentTarget.dataset.name;
+            this.form_data[name] = e.detail.value;
+            this.$apply();
+          },
+          lookKnow(){
+            wx.navigateTo({
+              url: '/pages/index/manageActivity'
+            });
+          },
+          //继续支付
+          postReplay(){
+            let that = this;
+            tip.loading();
+            wepy.request({
+              url: api.play_join + '?token=' +wx.getStorageSync('token'),
+              method:"post",
+              data:{
+                plid:that.plid,
+                repay:true
+              }
+            }).then(resule => {
+              if(resule.data.status == 200){
+                if(resule.data.data.redirect){
+                  wx.showToast({
+                    title: '报名成功',
+                    icon: 'none',
+                    duration: 2000
+                  });
+                  wx.redirectTo({
+                    url: '/pages/index/manageActivity'
+                  });
+                }else{
+                  let params = resule.data.data.args;
+                  that.pay(params);
+                }
+
+              }else if(resule.data.status == 405){
+                wx.navigateTo({
+                  url: '/pages/index/manageActivity'
+                });
+              }
+            })
+          },
+          showRule(){
+            wx.showToast({
+              title: '费用扣减详情可询问领队',
+              icon: 'none',
+              duration: 2000
+            })
+
+          },
+          changeRoute(v){
+              let that = this;
+            wx.navigateTo({
+              url: v + '?plid=' + that.plid
+            });
+          },
+          playVideo(v){
+            this.show_video = true;
+            this.video_url = v.url;
+            this.$apply();
+          },
+          changeModal(name,bool){
+
+            if(bool == 'true'){
+              this[name] = bool;
+            }else{
+              this[name] = false;
+            }
+            this.$apply();
+          },
+        }
+    }
+</script>

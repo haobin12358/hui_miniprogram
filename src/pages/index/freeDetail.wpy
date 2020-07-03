@@ -1,0 +1,1089 @@
+<style scoped lang="less" rel="stylesheet/less">
+@import "../../styles/common";
+.m-freeDetail{
+  padding-bottom: 120rpx;
+    color: #172434;
+  /*.m-top-img-box{*/
+    position: relative;
+    /*width: 100%;*/
+    /*height: 750rpx;*/
+    .m-top-img{
+      width: 100%;
+      height: 750rpx;
+      /*background-color: #FFCE00;*/
+    }
+    .m-return{
+      position: absolute;
+      top: 20rpx;
+      left: 20rpx;
+      padding: 0 18rpx;
+      height: 60rpx;
+      line-height: 60rpx;
+      background-color: rgba(0,0,0,0.5);
+      border-radius: 50rpx;
+      color: #fff;
+      .m-icon-more{
+        margin-right: 10rpx;
+        margin-left: 0;
+      }
+    }
+    .m-icon-share{
+      position: absolute;
+      top: 20rpx;
+      right: 20rpx;
+      width: 60rpx;
+      height: 60rpx;
+    }
+  /*}*/
+  .m-time-box{
+    height: 128rpx;
+    width: 100%;
+    overflow: hidden;
+    color: #fff;
+      position: relative;
+      .m-time-bg{
+          width: 100%;
+          height: 128rpx;
+      }
+      .m-time-content{
+          position: absolute;
+          width: 100%;
+          top: 0;
+          left: 0;
+          text-align: center;
+          height: 128rpx;
+          .flex-row(space-between);
+      }
+    .m-price{
+      font-size: 32rpx;
+      padding-left: 20rpx;
+      .m-bold{
+        font-size: 42rpx;
+        font-weight: 600;
+      }
+    }
+      .m-line{
+          width: 1px;
+          height: 48rpx;
+          background-color: #fff;
+      }
+      .m-time-item{
+          display: flex;
+          flex-flow: column;
+          align-items: center;
+          justify-content: center;
+          width: 300rpx;
+
+      }
+    .m-time-text{
+        margin-top: 8rpx;
+      color: #172434;
+      .m-time{
+        display: inline-block;
+        min-width: 50rpx;
+        padding: 0 10rpx;
+        height: 50rpx;
+          font-size: 36rpx;
+        line-height: 50rpx;
+        border-radius: 5rpx;
+        background-color: #fff;
+        text-align: center;
+        margin: 0 4rpx;
+      }
+    }
+  }
+  .m-freeDetail-content{
+      font-family:PingFangSC-Regular,PingFang SC;
+      padding: 20rpx 30rpx;
+      .m-activity-info{
+          color: #666666;
+          .m-black{
+              color: #333;
+              font-weight: 500;
+          }
+          .scores-ranking{
+              margin-bottom: 40rpx;
+              .scores-people{
+                  /*width: 60rpx;*/
+                  padding-right: 30rpx;
+                  position: relative;
+                  .m-head{
+                      width: 40rpx;
+                      height: 40rpx;
+                      border: 1rpx solid #fff;
+                      background-color: #0BB20C;
+                      border-radius: 50%;
+                      &:nth-child(2){
+                          position: absolute;
+                          left: 20rpx;
+                          z-index: -1;
+                      }
+                  }
+              }
+              .ranking{
+                  display: inline-block;
+                  margin-left: 16rpx;
+              }
+          }
+          .icon{
+              width: 38rpx;
+              height: 38rpx;
+              margin-right: 8rpx;
+              flex-shrink:0;
+          }
+          .scores-rule{
+              color: #999;
+              margin-bottom: 20rpx;
+              .rule-item{
+                  width: 50%;
+              }
+          }
+          .use-time{
+              color: #999;
+              align-items: flex-start;
+              margin-bottom: 40rpx;
+            .label{
+                width: 250rpx;
+            }
+              .time{
+                  color: #666;
+              }
+          }
+      }
+    .m-detail-info{
+      .m-red{
+        font-size: 32rpx;
+        &.m-black{
+          color: #172434;
+        }
+        .m-price{
+          font-size: 48rpx;
+          font-weight: 600;
+            s{
+                text-decoration: line-through;
+            }
+        }
+      }
+      .m-progress-box{
+        width: 280rpx;
+        text-align: center;
+        .m-bold{
+          font-size: 32rpx;
+          font-weight: 400;
+        }
+      }
+      .m-name{
+        font-weight: 500;
+        /*padding: ;*/
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+          font-size: 32rpx;
+          padding: 5rpx 0;
+          height: 82rpx;
+      }
+        .m-price{
+            .m-bold{
+                font-size: 48rpx;
+                font-weight: 500;
+            }
+        }
+        .m-line-price{
+            text-decoration: line-through;
+            color: #999999;
+        }
+    }
+      .m-list-img{
+          width: 100%;
+          height: 140rpx;
+          /*background-color: #FFCE00;*/
+      }
+    .m-num{
+      padding: 20rpx;
+      border-bottom: 1px solid @border-color;
+      .flex-row(space-between);
+      .m-cut-add{
+        span{
+          display: inline-block;
+          width: 60rpx;
+          height: 60rpx;
+          line-height: 60rpx;
+          text-align: center;
+          background-color: #E5E5E5;
+          font-size: 32rpx;
+          margin: 0 1px;
+        }
+        .m-cut{
+          color: #919191;
+        }
+      }
+    }
+    .m-rule{
+      padding: 20rpx 0;
+        &.m-no-bottom{
+            border-bottom: none;
+        }
+        .loc-icon{
+            width: 32rpx;
+            height: 32rpx;
+        }
+    }
+      .sale-num{
+          color: @grey-color;
+          /*padding-right: 32rpx;*/
+      }
+    .m-code{
+      align-items: flex-start;
+      padding: 20rpx;
+      border-bottom: 1px solid @border-color;
+    }
+    .m-rule-text{
+      /*width: 577rpx;*/
+        max-height: 36rpx;
+      margin-left: 20rpx;
+      color: @grey-color;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .m-code-text{
+      width: 477rpx;
+      margin-left: 20rpx;
+      max-height: 264rpx;
+      span{
+        display: inline-block;
+        margin-right: 10rpx;
+      }
+        .m-user{
+            .flex-row(space-between);
+            margin-bottom: 10rpx;
+            .m-user-head{
+                background-color: #FFCE00;
+                margin-right: 20rpx;
+                width: 60rpx;
+                height: 60rpx;
+            }
+        }
+    }
+    .m-image-box{
+      .m-img{
+        width: 750rpx;
+        /*height: auto;*/
+      }
+    }
+    .m-info{
+      padding: 20rpx 30rpx;
+        .m-info-title{
+            width: 100%;
+            .flex-row(center);
+            margin-bottom: 20rpx;
+            .m-info-line{
+                width: 80rpx;
+                height: 1px;
+                background-color: #CCCCCC;
+            }
+            .m-title{
+                margin: 0 16rpx;
+                color: #ccc;
+            }
+        }
+    }
+
+  }
+    .m-info-content{
+        width: 100%;
+        .flex-row(space-around);
+        padding: 20rpx;
+        box-sizing: border-box;
+        span{
+            display: block;
+            padding: 5rpx 20rpx;
+            &.active{
+                color: @common-color;
+                border-bottom: 2px solid @common-color;
+            }
+        }
+    }
+    .m-bottom-btn-box{
+        position: fixed;
+        bottom:0;
+        left:0;
+        background-color: #fff;
+        padding-left: 50rpx;
+        width: 100%;
+        border-top: 1px solid @border-color;
+        .flex-row(space-between);
+        .m-btn{
+            width: 600rpx;
+            /*padding: 0 20rpx;*/
+            height: 88rpx;
+            line-height: 88rpx;
+            background-color: @common-color;
+            /*border-radius: 30rpx;*/
+            text-align: center;
+            &.cancel{
+                background-color: #EBEBEB;
+            }
+        }
+        .m-code-icon{
+            width: 60rpx;
+            height: 60rpx;
+        }
+        .m-icon-btn{
+            .flex-col(center);
+            font-size: 20rpx;
+        }
+    }
+  .m-alert{
+    width: 30rpx;
+    height: 30rpx;
+    margin-right: 20rpx;
+  }
+  .m-modal{
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.16);
+    position: fixed;
+    top:0;
+    left:0;
+    .m-modal-state{
+      padding: 30rpx;
+      background-color: #fff;
+      position: fixed;
+      top:0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      width: 600rpx;
+      height: 750rpx;
+      box-sizing: border-box;
+    }
+    &.m-result{
+        .m-modal-state{
+          padding: 65rpx 144rpx;
+          text-align: center;
+            height: 500rpx;
+          .m-icon-success{
+            width: 56rpx;
+            height: 56rpx;
+            margin-right: 30rpx;
+          }
+          .m-success-text{
+            font-size: 40rpx;
+            font-weight: 500;
+          }
+            .m-result-text{
+                padding: 0 38rpx;
+                .m-bold{
+                    font-size: 28rpx;
+                    font-weight: 500;
+                }
+
+            }
+          .m-code{
+            width: 323rpx;
+            height: 323rpx;
+            margin: 40rpx 0 20rpx;
+            .m-code-img{
+              width: 323rpx;
+              height: 323rpx;
+            }
+            &.m-num{
+              height: 200rpx;
+              .flex-col(space-around);
+              font-size: 38rpx;
+              .m-num-text{
+                font-size: 50rpx;
+                font-weight: 600;
+                span{
+                  display: inline-block;
+                  padding: 0 4rpx;
+                }
+              }
+            }
+          }
+          .m-ft-24{
+            font-size: 24rpx;
+          }
+          .m-alert{
+            margin-right: 0;
+              margin-top: 20rpx;
+          }
+          .m-btn{
+            width: 300rpx;
+            height: 60rpx;
+            line-height: 60rpx;
+            background-color: @common-color;
+            text-align: center;
+            font-weight: 500;
+            margin-top: 40rpx;
+          }
+        }
+    }
+      &.m-sure{
+          .m-modal-state{
+              padding: 30rpx 140rpx;
+              text-align: center;
+              font-size: 32rpx;
+              height: 360rpx;
+              .flex-col(space-around);
+              .m-btn-box{
+                  margin-top: 40rpx;
+                  span{
+                      width: 48%;
+                      height: 80rpx;
+                      line-height: 80rpx;
+                      display: inline-block;
+                      text-align: center;
+                      border: 1px solid @common-color;
+                      &.active{
+                         background-color: @common-color;
+                      }
+                  }
+              }
+              .m-btn{
+                  width: 200rpx;
+                  background-color: @common-color;
+                  display: inline-block;
+                  height: 50rpx;
+                  line-height: 50rpx;
+              }
+          }
+      }
+  }
+    .m-pic-modal{
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(0,0,0,0.16);
+        position: fixed;
+        top:0;
+        left: 0;
+        z-index: 200;
+        .m-modal-state{
+            width: 611rpx;
+            height: 823rpx;
+            /*background-color: #fff;*/
+            position: fixed;
+            bottom:0;
+            left: 0;
+            right: 0;
+            top: 0;
+            margin: auto;
+            .m-share-img{
+                width: 611rpx;
+                height: 810rpx;
+            }
+        }
+    }
+}
+</style>
+<template>
+    <view class="m-freeDetail" wx:if="{{detail}}">
+      <view class="m-top-img-box">
+<!--        <image class="m-top-img" src="{{detail.tiimg}}" @tap="previewImg({{detail.tiimg}})"></image>-->
+          <swiper
+                  indicator-dots="{{indicatorDots}}"
+                  autoplay="{{autoplay}}"
+                  interval="{{interval}}"
+                  duration="{{duration}}"
+                  style="height: 600rpx;"
+          >
+              <block wx:for="{{detail.prbanner}}" wx:key="item">
+                  <swiper-item >
+                      <image src="{{item}}"  @tap="previewImg({{item}})" class="slide-image" style="width: 750rpx;height: 600rpx;" />
+                  </swiper-item>
+              </block>
+          </swiper>
+        <!--<view class="m-return m-flex-center" @tap="changeRoute('/pages/ticket/index','index')">-->
+          <!--<image src="{{img_src}}index/icon-return.png" class="m-icon-more"></image>-->
+          <!--<span>查看更多</span>-->
+        <!--</view>-->
+<!--        <image src="{{img_src}}index/icon-share.png" class="m-icon-share" @tap="changeModal('show_share',true)"></image>-->
+        <view class="m-time-box" wx:if="{{detail.prtimelimeted == 1}}">
+            <image src="{{img_src}}index/time-bg-start.png" wx:if="{{detail.prstatus == 0}}" class="m-time-bg"></image>
+            <image src="{{img_src}}index/time-bg-going.png" wx:if="{{detail.prstatus == 1}}" class="m-time-bg"></image>
+            <image src="{{img_src}}index/time-bg-end.png" wx:if="{{detail.prstatus == 3}}" class="m-time-bg"></image>
+            <view class="m-time-content">
+                <view class="m-price">
+                    活动数量 <s class="m-bold">{{detail.prnum}}</s>
+                </view>
+                <view class="m-flex-end">
+                    <view class="m-line"></view>
+                    <view class="m-time-item" >
+                        <view>{{detail.prstatus == 0 ? '活动即将开始' :(detail.prstatus == 1 ? '活动即将结束' :'活动已结束')}}</view>
+                        <view class="m-time-text">
+                            <span class="m-time">{{hour || '00'}}</span>:<span class="m-time">{{minute || '00'}}</span>:<span class="m-time">{{second || '00'}}</span>
+                        </view>
+                    </view>
+                </view>
+            </view>
+
+
+        </view>
+      </view>
+      <view class="m-freeDetail-content">
+          <view class="m-activity-info" wx:if="{{detail.prtimelimeted == 1}}">
+              <view class="scores-ranking m-flex-between" wx:if="{{detail.traded}}">
+                  <view class="m-flex-start">
+                      <view class="m-flex-start scores-people">
+                          <image src="{{i}}" wx:for="{{detail.buyer_avatar}}" wx:key="{{i}}"  wx:for-item="i" class="m-head"></image>
+                      </view>
+                      <view>
+                          <span class="m-black">{{detail.apply_num}}</span>
+                          人参与
+                      </view>
+                  </view>
+                    <view class="m-flex-end">
+                        我的活跃分排名
+                        <span class="m-black ranking">{{detail.rank}}</span>
+                    </view>
+              </view>
+              <view class="scores-rule m-flex-start">
+                  <view class="m-flex-start rule-item" @tap.stop="changeModal('show_rule',true,'tirules')">
+                      <image src="{{img_src}}index/buy-rule.png" class="icon"></image>
+                      <view>购买须知</view>
+                  </view>
+                  <view class="m-flex-start rule-item" @tap.stop="changeModal('show_rule',true,'scorerule')">
+                      <image src="{{img_src}}index/score-rule.png" class="icon"></image>
+                      <view>活跃分购买须知</view>
+                  </view>
+              </view>
+              <view class="m-flex-start use-time">
+                  <image src="{{img_src}}index/use-time.png" class="icon"></image>
+                  <view class="label">使用时间</view>
+                  <view class="time">{{detail.prusestarttime}}-{{detail.pruseendtime}} 期间工作日节假日均可使用</view>
+              </view>
+          </view>
+        <view class="m-detail-info">
+          <view class="m-name">{{detail.prname}}</view>
+            <view class="m-price">￥<span class="m-bold">{{detail.prtrueprice}}</span></view>
+            <view class="m-line-price">￥{{detail.prlineprice}}</view>
+        </view>
+          <view class="m-flex-between">
+              <view class="m-flex-start m-rule" >
+                  <image src="{{img_src}}common/icon-loc-grey.png" class="loc-icon"></image>
+                  <view class="m-rule-text" @tap="showLine">{{detail.position.tiaddress}}</view>
+              </view>
+              <view class="sale-num">月销 {{detail.month_sale_value}}</view>
+          </view>
+        <view class="m-info" >
+            <view class="m-info-title">
+                <view class="m-info-line"></view>
+                <view class="m-title">商品详情</view>
+                <view class="m-info-line"></view>
+            </view>
+          <htmlParser :parserName.sync="name1" :parserContent.sync="content1" />
+        </view>
+      </view>
+      <view class="m-bottom-btn-box" >
+              <view class="m-icon-btn" @tap="drawImg">
+                  <image src="{{img_src}}personal/icon-code.png" class="m-code-icon"></image>
+                  <span>分享</span>
+              </view>
+<!--          <view class="m-btn " wx:if="{{!detail.traded &&   !detail.verified}}" @tap="changeRoute('/pages/personal/identification','info')">实名认证</view>-->
+              <view class="m-btn {{(detail.prstatus !=1) ?'cancel':''}}" wx:if="{{detail.prtimelimeted == 1 }}" @tap="scoreTap">活跃分申请</view>
+              <view class="m-btn " wx:if="{{detail.prtimelimeted == 0}}"  @tap="submitTap(2)">购买</view>
+              <!--<view wx:if="{{detail.traded}}">已报名，活跃分：<span class="m-common">{{detail.tsoactivation || 0}}</span> ，当前排名：<span class="m-common">{{detail.rank || 1}}</span></view>-->
+              <!--<view wx:if="{{detail.tsostatus >= 1}}">已购买</view>-->
+          </view>
+
+<!--      支付成功-->
+      <view class="m-modal m-sure" wx:if="{{show_ident}}" @tap.stop="changeModal('show_ident',false)">
+        <view class="m-modal-state">
+<!--          <view>-->
+<!--              已信用认证的用户可享受免押金试用服务，系统将根据您目前的支付信用，判断是否可使用该服务。<span class="m-common" wx:if="{{!detail.verified}}" @tap.stop="changeRoute('/pages/personal/identification','info')">去信用认证</span>-->
+<!--          </view>-->
+            <view>提升活跃分以增加申请成功的可能性</view>
+            <view>
+                <span class="m-btn"  @tap.stop="changeModal('show_ident',false)">知道了</span>
+            </view>
+<!--          <view class="m-btn-box">-->
+<!--              <span @tap.stop="changeModal('show_ident',false)">取消</span>-->
+<!--              <span class="active" @tap.stop="submitTap(3)">确定</span>-->
+<!--          </view>-->
+        </view>
+      </view>
+      <view class="m-modal m-result" wx:if="{{show_result}}" >
+        <view class="m-modal-state">
+          <view class="m-flex-center">
+            <image src="{{img_src}}index/icon-success.png" class="m-icon-success"></image>
+            <view class="m-success-text">支付成功</view>
+          </view>
+         <image src="{{img_src}}index/icon-alert.png" class="m-alert" ></image>
+<!--          <view >提示</view>-->
+<!--          <view class="m-ft-24" wx:if="{{pay_done}}">抢票时间截止后平台将公布获得门票的用户，该部分用户需交剩余押金获取门票</view>-->
+            <view wx:if="{{pay_done}}" class="m-result-text">
+                            <span class="m-grey">结果可以在</span>
+                            <span class="m-bold">我的- 我的订单</span><span class="m-grey">中查看</span>
+                          </view>
+          <view class="m-btn" @tap.stop="changeModal('show_result',false)">我知道了</view>
+        </view>
+      </view>
+      <view class="m-modal" wx:if="{{show_rule}}" @tap.stop="changeModal('show_rule',false)">
+        <view class="m-modal-state">
+            <htmlParser2 :parserName.sync="name3" :parserContent.sync="content3" />
+        </view>
+      </view>
+        <view class="m-modal" wx:if="{{show_code}}" @tap.stop="changeModal('show_code',false)">
+            <view class="m-modal-state">
+                <view wx:for="{{code_list}}" wx:key="{{index}}">{{index}}、{{item}}</view>
+            </view>
+        </view>
+        <view class="m-pic-modal" wx:if="{{show_pic}}" @tap="changeModal('show_pic',false)">
+            <view class="m-modal-state">
+                <image src="{{photo}}" class="m-share-img" @tap="previewImg({{photo}})"></image>
+            </view>
+        </view>
+      <share :show.sync="show_share" @changeModal.user="changeModal" :params.sync="params" :prid.sync="prid"></share>
+        <phone :show_tel.sync="show_tel" :url.sync="url"></phone>
+    </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import api from '../../api/api';
+  import share from '../../components/common/share';
+  import htmlParser from '../../components/common/htmlParser';
+  import tip from '../../utils/tip';
+  import Circle from '../../components/common/circle';
+  import Phone from '../../components/common/phone';
+  export default class freeDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '商品详情',
+      enablePullDownRefresh: true
+    };
+    components = {share:share,htmlParser:htmlParser,htmlParser1:htmlParser,htmlParser2:htmlParser,circle:Circle,phone:Phone};
+    data = {
+        indicatorDots: true,
+        autoplay: true,
+        interval: 5000,
+        duration: 1000,
+      img_src:api.img_src,
+      show_result:false,
+      show_rule:false,
+      rule:'规则',
+      show_share:false,
+        prid:'',
+      detail:{},
+      name1:'htmlParserName1',
+      content1:"",
+        name2:'htmlParserName2',
+        content2:"",
+        name3:'htmlParserName3',
+        content3:"",
+      num:1,
+      hour:'',
+      minute:'',
+      second:'',
+      tsoid:'',
+      time:'',
+      loading:false,
+      pay_done:false,
+      tscode:[],
+      secret_usid:'',
+      params : 'page=/pages/index/freeDetail',
+        list_data:[],
+        show_code:false,
+        code_list:[],
+        show_pic:false,
+        photo:'',
+        page_info:{
+            page_num: 1,
+            page_size: 10
+        },
+        total_count:0,
+        show_ident:false,
+        tiname:'',
+        usid:'',
+        show_tel:false,
+        url:''
+    };
+    getData(){
+      let that = this;
+      that.loading = true;
+      that.$apply();
+      console.log(that.usid,'usid')
+      wepy.request({
+        url: api.product_get + '?token=' +wx.getStorageSync('token'),
+        method:"get",
+        data:{
+            prid:that.prid,
+            secret_usid:wx.getStorageSync('secret_usid')
+        }
+      }).then(res => {
+        if(res.data.status == 200){
+          that.detail = res.data.data;
+          console.log(this.detail)
+            that.content2 = res.data.data.tirules;
+            that.content2 = that.content2.replace(/&quot;/g,'');
+            that.content2 = that.content2.replace(/&nbsp;/g, '\xa0');
+          that.content1 = res.data.data.prdetails;
+          that.content1 = that.content1.replace(/&quot;/g,'');
+          that.content1 = that.content1.replace(/&nbsp;/g, '\xa0');
+          that.loading = false;
+          that.$apply();
+            that.$invoke('htmlParser', 'htmlParserNotice');
+            that.$invoke('htmlParser1', 'htmlParserNotice');
+
+          if(that.detail.prstatus <2 ){
+            that.dealTime();
+          }
+          if(that.detail.show_record){
+              that.getCircle();
+          }
+        }
+      })
+    }
+      getCircle(){
+          let that = this;
+          tip.loading();
+          wepy.request({
+              url: api.travelrecord_list +'?token='+wx.getStorageSync('token') ,
+              data: {
+                  prid:that.prid,
+                  page_num:that.page_info.page_num,
+                  page_size: that.page_info.page_size,
+              }
+          }).then(res => {
+              if(res.data.status == 200){
+                  let data = res.data.data.travelrecord;
+                  if(that.page_info.page_num >1){
+                      that.list_data = that.list_data.concat(data);
+                  }else{
+                      that.list_data = data;
+                  }
+                  that.total_count = res.data.total_count;
+                  that.$apply();
+                  tip.loaded();
+              }
+          })
+      }
+      getCode(){
+          let that = this;
+          that.loading = true;
+          that.$apply();
+          wepy.request({
+              url: api.list_activationtype + '?token=' +wx.getStorageSync('token'),
+              method:"get",
+              data:{
+                  page_size:100,
+                  page_num:1
+              }
+          }).then(res => {
+              if(res.data.status == 200){
+                 that.code_list = res.data.data;
+                 that.$apply();
+              }
+          })
+      }
+    dealTime(){
+      let that = this;
+      function countTime() {
+        var date = new Date();
+        var now = date.getTime();
+        let endDate;
+        if(that.detail.prstatus == 0){
+          endDate = new Date(that.detail.prissuestarttime.replace(/-/g, "/"));//设置截止时间
+        }else if(that.detail.prstatus == 1){
+          endDate = new Date(that.detail.prissueendtime.replace(/-/g, "/"));//设置截止时间
+        }
+        var end = endDate.getTime();
+        var leftTime = end - now; //时间差
+        var d, h, m, s, ms;
+        if(leftTime >= 0) {
+          d = Math.floor(leftTime / 1000 / 60 / 60 / 24);
+          h = Math.floor(leftTime / 1000 / 60 / 60 );
+          m = Math.floor(leftTime / 1000 / 60 % 60);
+          s = Math.floor(leftTime / 1000 % 60);
+          ms = Math.floor(leftTime % 1000);
+          if(ms < 100) {
+            ms = "0" + ms;
+          }
+          if(s < 10) {
+            s = "0" + s;
+          }
+          if(m < 10) {
+            m = "0" + m;
+          }
+          if(h < 10) {
+            h = "0" + h;
+          }
+        } else {
+          if(that.detail.prstatus == 0){
+            that.detail.prstatus = 1;
+          }else if(that.detail.prstatus == 1){
+            that.detail.prstatus == 3;
+          }
+        }
+        that.hour = h;
+        that.minute = m;
+        that.second = s;
+        // that.millisecond = ms;
+        that.$apply();
+        //递归每秒调用countTime方法，显示动态时间效果
+        that.time =  setTimeout(function() {
+          countTime();
+        }, 1000);
+      }
+      countTime();
+    }
+//支付
+    pay(params){
+      let that = this;
+      wx.requestPayment({
+        timeStamp: params.timeStamp,
+        nonceStr: params.nonceStr,
+        package: params.package,
+        signType: params.signType,
+        paySign: params.sign,
+        success (res) {
+           if(that.detail.tsoid){
+             // that.getData();
+           }else{
+             that.pay_done = true;
+             that.show_result = true;
+           }
+            that.getData();
+           that.$apply();
+        },
+        fail (res) {
+          wx.showToast({
+            title: '支付失败，请稍后再试',
+            icon: 'none',
+            duration: 2000
+          })
+        }
+      })
+    }
+    postData(num){
+      let that = this;
+      tip.loading();
+      let params = {};
+        params = {
+          prid: that.detail.prid,
+          ompaytype:Number(num),
+            secret_usid: wx.getStorageSync('secret_usid')
+        }
+
+      wepy.request({
+        url: api.order_pay + '?token=' +wx.getStorageSync('token'),
+        method:"post",
+        data:params
+      }).then(resule => {
+        if(resule.data.status == 200){
+            let params = resule.data.data.args;
+            that.tscode = [].concat(resule.data.data.tscode);
+            that.$apply();
+
+            if(Number(num) == 3 ){
+                that.show_ident = false;
+            }
+            if(resule.data.data.redirect){
+                that.pay_done = true;
+                that.show_result = true;
+                that.$apply();
+                that.getData();
+            }else{
+                that.pay(params);
+            }
+
+          // }
+
+        }else if(resule.data.status_code == 405014){
+            that.show_tel = true;
+            that.$apply();
+        }
+      })
+    }
+    getId(){
+      let that = this;
+      wepy.request({
+        url:api.secret_usid + '?token=' +wx.getStorageSync('token'),
+        method:"get",
+        data:{}
+      }).then(resule => {
+        if(resule.data.status == 200){
+          that.secret_usid = resule.data.data.secret_usid;
+          that.params = `page=/pages/index/freeDetail&prid=${that.prid}&secret_usid=${that.secret_usid}`;
+          that.$apply();
+        }
+      })
+    }
+    // 分享
+      getTicketPhoto(){
+          let that = this;
+          tip.loading();
+          that.photo = '';
+          that.$apply();
+          wepy.request({
+              url: api.product_get_promotion + '?token=' +wx.getStorageSync('token'),
+              data: {
+                  prid: that.prid,
+                  params:that.params
+              }
+          }).then(res => {
+              if(res.data.status == 200){
+                  let data = res.data.data;
+                  that.photo = api.api + data.promotion_path;
+                  that.show_pic = true;
+                  that.$apply();
+
+              }else if(res.data.status_code == 405014){
+                  that.show_tel = true;
+                  that.$apply();
+              }
+          })
+      }
+    onShareAppMessage(res) {
+      if (res.from === 'button') {
+
+      }
+      let that = this;
+      let params = `?page=/pages/index/freeDetail&tiid=${that.tiid}&secret_usid=${that.secret_usid}`
+      // let params = '?scene=params=259'
+      return {
+        title: '邀请你免费试玩'+ that.detail.tiname,
+        path: '/pages/ticket/index'+params,
+        success: function (res) {
+          console.log('成功', res)
+        }
+      }
+    }
+    onLoad(options) {
+      if(options.prid){
+        this.prid = options.prid;
+        this.$apply();
+      }
+      this.url = `/pages/index/freeDetail?prid=${this.prid}`;
+      this.$apply();
+
+        if(wx.getStorageSync('token')){
+            this.getId();
+        }
+      this.getData();
+      // this.getCode();
+        wx.setBackgroundColor({
+            backgroundColorTop: '#185355', // 顶部窗口的背景色为白色
+            backgroundColorBottom: '#ffffff', // 底部窗口的背景色为白色
+        })
+    }
+    onUnload(){
+      let that = this;
+     clearTimeout(that.time);
+
+    }
+    onPullDownRefresh() {
+      // 上拉刷新
+      if (!this.loading) {
+          this.page_info.page_num = 1;
+          this.$apply();
+        this. getData();
+        // 处理完成后，终止下拉刷新
+      }
+    }
+      onReachBottom() {
+          // 下拉触底，先判断是否有请求正在进行中
+          // 以及检查当前请求页数是不是小于数据总页数，如符合条件，则发送请求
+          if(!this.loading && this.total_count > this.list_data.length) {
+              this.page_info.page_num += 1;
+              this.$apply();
+              this.getCircle();
+          }
+      }
+    methods = {
+
+      submitTap(num){
+          if(num == 2){
+
+          }else{
+              if(this.detail.prstatus !=1){
+                  return;
+              }
+          }
+
+        // this.show_result = true;
+        // this.$apply();
+        this.postData(num);
+
+      },
+      changeModal(name,bool,key){
+        if(bool == 'false'){
+          this[name] = false;
+        }else{
+          this[name] = true;
+            if(name == 'show_rule'){
+                this.content3 = this.detail[key];
+                if(this.content3){
+                    this.content3 = this.content3.replace(/&quot;/g,'');
+                    this.content3 = this.content3.replace(/&nbsp;/g, '\xa0');
+                    this.loading = false;
+                    this.$apply();
+                    this.$invoke('htmlParser2', 'htmlParserNotice');
+                }else{
+                    this[name] = false;
+                }
+
+            }
+        }
+
+        this.$apply();
+      },
+      changeRoute(v,page){
+        let that = this;
+        if(page == 'index'){
+            wx.switchTab({
+                url: v
+            })
+        }else if(page == 'info'){
+            wx.navigateTo({
+                url: v
+            });
+        }else{
+            wx.redirectTo({
+                url: v
+            });
+        }
+
+      },
+      previewImg(item){
+        let that = this;
+        console.log(item)
+        wx.previewImage({
+          current: item, // 当前显示图片的http链接
+          urls: [item] // 需要预览的图片http链接列表
+        })
+      },
+        drawImg(){
+            if(this.prid){
+                this.getTicketPhoto();
+            }
+
+        },
+        scoreTap(){
+            if(this.detail.prstatus !=1 ){
+                return;
+            }
+            // this.show_ident = true;
+            // this.$apply();
+            this.postData(3);
+        },
+        //调起导航
+        showLine(){
+            let that = this;
+            wx.openLocation({ // 打开微信内置地图，实现导航功能（在内置地图里面打开地图软件）
+                latitude: Number(that.detail.position.latitude),
+                longitude: Number(that.detail.position.longitude),
+                name:that.detail.position.tiaddress,
+                success:function(res){
+                    console.log(res);
+                },
+                fail:function(res){
+                    console.log(res);
+                }
+            })
+        },
+    };
+  }
+</script>

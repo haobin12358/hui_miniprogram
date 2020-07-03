@@ -1,0 +1,443 @@
+<style scoped lang="less" rel="stylesheet/less">
+  @import "../../styles/common.less";
+  .m-mainIndex{
+    padding-bottom: 30rpx;
+    font-size: 28rpx;
+    .m-mainIndex-top{
+      position: relative;
+      width: 100%;
+      height: 250rpx;
+      box-sizing: border-box;
+      .m-personal-bg{
+        width: 100%;
+        height: 250rpx;
+        position: absolute;
+        top:0;
+        left:0;
+      }
+      .m-top-content{
+        position: absolute;
+        top:0;
+        left:0;
+        width: 100%;
+        height: 250rpx;
+        .flex-row(space-around);
+        .m-user-info{
+          text-align: center;
+          .m-user-head{
+            width: 100rpx;
+            height: 100rpx;
+          }
+          .m-user-label{
+            color: #000;
+            border-color: #000;
+            max-width: 200rpx;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+        .m-num-box{
+          .flex-row(space-around);
+          /*width:400rpx;*/
+          text-align: center;
+          font-weight: 300;
+          .m-col{
+            &.active{
+              font-weight: 500;
+              .m-num{
+                font-weight: 600;
+              }
+            }
+            .m-num{
+              font-size: 40rpx;
+              font-weight: 400;
+            }
+          }
+          .m-line{
+            height: 40rpx;
+            width: 1px;
+            background-color: #000;
+            margin: 0 60rpx;
+          }
+          .m-img{
+            width: 40rpx;
+            height: 40rpx;
+          }
+        }
+      }
+    }
+    .m-mainIndex-content{
+      .m-select-box{
+        .flex-row(space-around);
+        padding: 30rpx 0;
+        font-size: 24rpx;
+      }
+    }
+  }
+
+</style>
+<template>
+    <view class="m-mainIndex" wx:if="{{user_info}}">
+      <scroll-view scroll-y style="height: 100vh;" bindscrolltolower="lower"  >
+        <view class="m-mainIndex-top">
+          <image src="{{img_src}}personal/personal-bg.png" class="m-personal-bg"></image>
+          <view class="m-top-content">
+            <view class="m-user-info">
+              <image src="{{img_url}}{{user_info.usheader}}" class="m-user-head"></image>
+              <view class="m-user-name">{{user_info.usname}}</view>
+              <view class="m-user-label">{{user_info.usminilevel}}</view>
+            </view>
+            <view class="m-num-box">
+              <view class="m-col {{num_list[0].active ? 'active':''}}"  @tap="topTap(0)">
+                <view class="m-num">{{num_list[0].value}}</view>
+                <view>关注</view>
+              </view>
+              <view class="m-line"></view>
+              <view class="m-col {{num_list[1].active ? 'active':''}}" @tap="topTap(1)">
+                <view class="m-num">{{num_list[1].value}}</view>
+                <view>粉丝</view>
+              </view>
+              <view class="m-line" wx:if="{{!usid || (usid && !user_info.concerned)}}"></view>
+              <view class="m-col {{num_list[2].active ? 'active':''}}" wx:if="{{usid && !user_info.concerned}}" @tap="topTap(2)">
+                <image src="{{img_src}}index/icon-add-look.png" class="m-img" wx:if="{{ !user_info.concerned}}"></image>
+<!--                <image src="{{img_src}}index/icon-look-done.png" class="m-img" wx:else></image>-->
+                <view>关注</view>
+              </view>
+              <view class="m-col {{num_list[2].active ? 'active':''}}" wx:if="{{!usid}}" @tap="topTap(2)">
+                <view class="m-num">{{num_list[2].value}}</view>
+                <view>发布</view>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class="m-mainIndex-content">
+
+          <view wx:if="{{!num_list[0].active && !num_list[1].active  }}">
+            <view class="m-select-box">
+              <city @citySelect.user="citySelect"></city>
+              <picker mode="date" value="{{date}}" start="2018-09" fields="month"	  bindchange="bindDateChange">
+                <view class="m-select-one">
+                  <span class="{{date?'m-common':''}}">{{date || '时间'}}</span>
+                  <image src="{{img_src}}common/icon-down-solid-active.png" wx:if="{{date}}" class="m-down-solid"></image>
+                  <image src="{{img_src}}common/icon-down-solid.png" wx:else class="m-down-solid"></image>
+                </view>
+              </picker>
+
+              <picker bindchange="bindStatusChange" value="{{status_index}}" range-key="name" range="{{status_list}}">
+                <view class="m-select-one">
+                  <span  class="{{status_index?'m-common':''}}">{{status_list[status_index].name}}</span>
+                  <image src="{{img_src}}common/icon-down-solid-active.png" wx:if="{{status_index}}" class="m-down-solid"></image>
+                  <image src="{{img_src}}common/icon-down-solid.png" wx:else class="m-down-solid"></image>
+                </view>
+              </picker>
+            </view>
+
+              <circle :list.sync="list_data" wx:if="{{list_data.length > 0}}" ></circle>
+            <view class="m-no-data" wx:else>暂无内容</view>
+          </view>
+          <view wx:else>
+            <user :user_list.sync="user_list" wx:if="{{user_list.length > 0}}" ></user>
+            <view class="m-no-data" wx:else>暂无{{num_list[0].active?'关注的人':'粉丝'}}</view>
+          </view>
+
+        </view>
+      </scroll-view>
+    </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import api from '../../api/api';
+  import tip from '../../utils/tip';
+  import Circle from '../../components/common/circle';
+  import User from '../../components/common/user';
+  import City from '../../components/common/city';
+
+  export default class mainIndex extends wepy.page {
+    config = {
+      navigationBarTitleText: '个人主页',
+      enablePullDownRefresh: true
+    };
+    components = {
+      circle:Circle,
+      user:User,
+      city:City
+    };
+    data = {
+      user_info:null,
+      num_list:[
+        {
+          name:'关注',
+          value:22,
+          active:false,
+          type:'follow'
+        },
+        {
+          name:'粉丝',
+          value:22,
+          active:false,
+          type:'fens'
+        },
+        {
+          name:'发布',
+          value:22,
+          active:false
+        }
+      ],
+      img_src:api.img_src,
+      img_url:api.api,
+      status_list:[
+        {
+          name:'全部',
+          value:''
+        },
+        {
+          name:'攻略',
+          value:'0'
+        },
+        {
+          name:'游记',
+          value:'1'
+        },
+        {
+          name:'随笔',
+          value:'2'
+        }
+      ],
+      status_index:0,
+      date:'',
+      select_city:{},
+      list_data:[],
+      usid:'',
+      user_list:[],
+      page_info:{
+        page_num:1,
+        page_size:20
+      },
+      total_count:0,
+      option:'',
+      from:''
+    };
+    //
+    getData(){
+      let that = this;
+      tip.loading();
+      wepy.request({
+        url: api.travelrecord_list +'?token='+wx.getStorageSync('token') ,
+        data: {
+          usid:that.usid,
+          area:that.select_city.name || '',
+          date:that.date,
+          trtype:that.status_list[that.status_index].value,
+          page_num:that.page_info.page_num,
+          page_size: that.page_info.page_size,
+          option:that.option
+        }
+      }).then(res => {
+        if(res.data.status == 200){
+          let data = res.data.data;
+          that.num_list[0].value = data.top.followed;
+          that.num_list[1].value = data.top.fens;
+          that.num_list[2].value = data.top.published;
+          that.user_info = data.top;
+          if(that.page_info.page_num >1){
+            that.list_data = that.list_data.concat(data.travelrecord);
+          }else{
+            that.list_data = data.travelrecord;
+          }
+
+          for(let i=0;i<that.list_data.length;i++){
+
+            if(that.list_data[i].picture){
+              if(that.list_data[i].picture.indexOf('https://') < 0){
+                that.list_data[i].picture = api.api + that.list_data[i].picture;
+              }
+            }
+            if(that.list_data[i].trtype == 2){
+              if(that.list_data[i].showtype == 'image'){
+                for(let a =0;a<that.list_data[i].image.length;a++){
+                  if(that.list_data[i].image[a].indexOf('https://') < 0){
+                    that.list_data[i].image[a] = api.api +that.list_data[i].image[a]
+                  }
+                }
+              }
+              if(that.list_data[i].showtype == 'video'){
+                if(that.list_data[i].video.url.indexOf('https://') < 0){
+                  that.list_data[i].video.url = api.api + that.list_data[i].video.url;
+                }
+                if(that.list_data[i].video.thumbnail.indexOf('https://') < 0){
+                  that.list_data[i].video.thumbnail = api.api + that.list_data[i].video.thumbnail;
+                }
+              }
+            }
+
+          }
+          let _data = [].concat(that.list_data);
+          for(let j=0;j<_data.length;j++){
+            _data[j]['height'] = j *200;
+          }
+
+          that.list_data = [].concat(_data);
+          if(that.usid){
+            wx.setNavigationBarTitle({
+              title: data.top.usname +'的主页'
+            })
+          }
+          that.total_count = res.data.total_count;
+          that.$apply();
+        }
+      })
+    }
+    getUser(){
+      let that = this;
+      tip.loading();
+      let type = '';
+      for(let i =0;i<that.num_list.length;i++){
+        if(that.num_list[i].active){
+          type = that.num_list[i].type
+        }
+      }
+      wepy.request({
+        url: api.collection_show +'?token='+wx.getStorageSync('token') ,
+        data: {
+          showtype:type,
+          page_num:that.page_info.page_num,
+          page_size: that.page_info.page_size
+        }
+      }).then(res => {
+        if(res.data.status == 200){
+          let data = res.data.data;
+          if(that.page_info.page_num >1){
+            that.user_list =  that.user_list.concat(data);
+          }else{
+            that.user_list =  data;
+          }
+          that.total_count = res.data.total_count;
+          that.$apply();
+        }
+      })
+    }
+    postData(){
+      let that = this;
+      wepy.request({
+        url: api.collect + '?token=' +wx.getStorageSync('token'),
+        method:"post",
+        data:{
+          uclcotype:2,
+          uclcollection:that.usid
+        }
+      }).then(resule => {
+        if(resule.data.status == 200){
+          that.user_info.concerned = !that.user_info.concerned;
+          that.$apply();
+        }
+      })
+    }
+    onLoad(options) {
+      console.log(options,'dasdad')
+      if(options.usid){
+        this.usid = options.usid;
+        this.$apply();
+      }
+      if(options.from){
+        this.from = options.from;
+        this.$apply();
+      }
+    }
+    onShow(){
+      this.getData();
+    }
+    onUnload(){
+      this.usid = '';
+      this.$apply();
+      if(this.from == ''){
+        // this.gotoHomePage();
+      }
+
+    }
+// 在订单详情 点击小程序的返回 自定其他跳页方法
+    gotoHomePage() {//自定义页面跳转方法
+
+      wx.switchTab({
+        url: '/pages/personal/index',
+      });
+    }
+    methods = {
+      //类型选择
+      bindStatusChange(e){
+        this.status_index = e.detail.value;
+        this.$apply();
+        this.getData();
+      },
+      //时间选择
+      bindDateChange(e){
+        this.date = e.detail.value;
+        this.$apply();
+        this.getData();
+      },
+      //城市选择
+      citySelect(e){
+        this.select_city = e;
+        this.$apply();
+        this.getData();
+      },
+      //关注粉丝发布点击
+      topTap(e){
+        if(this.usid && this.user_info.concerned){
+          return false;
+        }
+        this.page_info.page_num = 1;
+        if(this.num_list[Number(e)].active){
+          this.num_list[Number(e)].active = !this.num_list[Number(e)].active;
+        }else{
+          for (let i=0;i<this.num_list.length;i++){
+            this.num_list[i].active = false;
+          }
+          this.num_list[Number(e)].active = true;
+        }
+
+        this.option = '';
+        this.$apply();
+        if(this.num_list[Number(e)].active) {
+          switch (e) {
+            case '0':
+              this.getUser();
+              break;
+            case '1':
+              this.getUser();
+              break;
+            case '2':
+              if(this.usid){
+                this.postData();
+              }else{
+                this.option = 'my';
+                this.getData();
+              }
+              break;
+          }
+        }else{
+          this.getData();
+        }
+
+      },
+      lower(){
+
+          if(!this.num_list[0].active && !this.num_list[1].active){
+            if(this.total_count > this.list_data.length){
+              this.page_info.page_num +=1;
+              this.$apply();
+              this.getData();
+            }
+          }else{
+            if(this.total_count > this.user_list.length){
+              this.page_info.page_num +=1;
+              this.$apply();
+              this.getUser();
+            }
+          }
+
+      }
+    };
+  }
+</script>

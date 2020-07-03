@@ -1,0 +1,285 @@
+<style scoped lang="less" rel="stylesheet/less">
+  @import "../../styles/common";
+  .m-image-list{
+    padding: 20rpx;
+    .m-btn{
+      width: 150rpx;
+      height: 50rpx;
+      text-align: center;
+      line-height: 50rpx;
+      border-radius: 30rpx;
+      background-color: @common-color;
+    }
+    .m-image-box{
+      padding: 20rpx 0;
+      width: 100%;
+      checkbox-group{
+        .flex-row(flex-start);
+        flex-wrap: wrap;
+      }
+      .m-one-image{
+        width: 233rpx;
+        height: 250rpx;
+        margin-right: 5rpx;
+        position: relative;
+        &:nth-child(3n){
+          margin-right: 0;
+        }
+        image{
+          width: 233rpx;
+          height: 233rpx;
+        }
+        .m-icon-play{
+          width: 80rpx;
+          height: 80rpx;
+          position: absolute;
+          top:0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          margin: auto;
+        }
+        .m-check{
+          position: absolute;
+          top:5rpx;
+          right: 5rpx;
+        }
+      }
+    }
+    .m-modal{
+      position: fixed;
+      top:0;
+      left: 0;
+      right: 0;
+      bottom:0;
+      width: 100%;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.16);
+      .flex-row(center);
+      &.m-video{
+        background-color: rgba(0,0,0,1);
+        color: #c1c1c1;
+        display: block;
+        .m-btn{
+          display: block;
+          padding: 20rpx;
+          background-color: transparent;
+        }
+      }
+      video{
+        width: 750rpx;
+        height: 90vh;
+      }
+    }
+  }
+
+</style>
+<template>
+    <view class="m-image-list" wx:if="{{items}}">
+     <view class="m-flex-between">
+       <view  >
+         <checkbox-group bindchange="checkChange" wx:if="{{show_edit}}">
+             <checkbox value="{{all}}" checked="{{all_check}}" color="#FFCE00" />全选
+         </checkbox-group>
+       </view>
+       <view wx:if="{{!show_edit}}" class="m-btn" @tap="showEdit">编辑</view>
+       <view wx:else class="m-btn" @tap="showEdit">确定</view>
+     </view>
+      <view class="m-image-box">
+        <checkbox-group bindchange="checkboxChange" >
+
+          <view class="m-one-image" wx:for="{{items}}" wx:key="{{index}}">
+            <image src="{{item.url}}" @tap="previewImage({{item.url}})" wx:if="{{item.type == 'image'}}"></image>
+            <image src="{{item.thumbnail}}" wx:if="{{item.type == 'video'}}" @tap="playVideo({{item}})"></image>
+            <image src="{{img_src}}common/icon-play.png" wx:if="{{item.type == 'video'}}" @tap="playVideo({{item}})" class="m-icon-play"></image>
+            <checkbox value="{{index}}" wx:if="{{show_edit}}" color="#FFCE00" class="m-check" checked="{{item.checked}}"/>
+          </view>
+        </checkbox-group>
+      </view>
+      <view class="m-modal m-video" wx:if="{{show_video}}">
+        <view class="m-flex-end">
+          <span class="m-btn" @tap="changeModal('show_video',false)">关闭</span>
+        </view>
+        <video src="{{video_url}}" autoplay="true"></video>
+      </view>
+    </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import api from '../../api/api';
+ import tip from '../../utils/tip';
+  export default class imageList extends wepy.page {
+    config = {
+      navigationBarTitleText: '照片列表'
+    };
+    components = {};
+    data = {
+      all:'all',
+      all_check:false,
+      items: [],
+      show_edit:false,
+      select_box:[],
+      video_url:'',
+      show_video:false,
+      img_src:api.img_src,
+      select_index :[],
+      secret_usid:''
+    };
+    onShareAppMessage(res) {
+      if (res.from === 'button') {
+
+      }
+      let that = this;
+      let params = `?page=/pages/index/imageList&secret_usid=${that.secret_usid}&plid=${that.plid}`
+      return {
+        title:  '相册',
+        path: '/pages/index/index'+params,
+        success: function (res) {
+          console.log('成功', res)
+        }
+      }
+    }
+    getId(){
+      let that = this;
+      wepy.request({
+        url:api.secret_usid + '?token=' +wx.getStorageSync('token'),
+        method:"get",
+        data:{}
+      }).then(resule => {
+        if(resule.data.status == 200){
+          that.secret_usid = resule.data.data.secret_usid;
+          that.$apply();
+        }
+      })
+    }
+    getPhoto(id){
+      let that = this;
+      tip.loading();
+      console.log(id,'img')
+      wepy.request({
+        url: api.get_team_album + '?token=' +wx.getStorageSync('token'),
+        data: {
+          plid:that.plid,
+          secret_usid:id
+        }
+      }).then(res => {
+        if(res.data.status == 200){
+          let data = res.data.data;
+          that.items = data;
+          for(let i=0;i<that.items.length;i++){
+            that.items[i].checked = false;
+          }
+          that.$apply();
+
+        }
+      })
+    }
+    postData(){
+      let that = this;
+      tip.loading();
+      for(let i=0;i<this.items.length;i++){
+         delete this.items[i].checked;
+      }
+      wepy.request({
+        url:api.share_content + '?token=' +wx.getStorageSync('token'),
+        method:"post",
+        data:{
+          type:1,
+          plid:that.plid,
+          album:that.select_box,
+          trids:[],
+
+        }
+      }).then(resule => {
+        if(resule.data.status == 200){
+          tip.toast('可点击右上角分享')
+
+        }
+      })
+
+    }
+    onLoad(options) {
+      if(options.plid){
+        this.plid = options.plid;
+        this.$apply();
+        let id = '';
+        if(options.secret_usid){
+          id= options.secret_usid;
+        }
+        this.getPhoto(id);
+      }
+    }
+    onShow(){
+      this.getId();
+    }
+
+    methods = {
+      //每个图片的选择
+      checkboxChange(e){
+        if(e.detail.value.length  == this.items.length){
+          this.all_check = true;
+        }else{
+          this.all_check = false;
+        }
+        this.select_index = e.detail.value;
+        this.$apply();
+      },
+      //全选
+      checkChange(e){
+
+        for(let i=0;i<this.items.length;i++){
+          if(e.detail.value.length > 0){
+            this.items[i].checked = true;
+          }else{
+            this.items[i].checked = false;
+          }
+        }
+        this.$apply();
+      },
+      //是否编辑
+      showEdit(){
+        this.show_edit = !this.show_edit;
+
+        if(!this.show_edit){
+          let arr = [];
+          for(let i=0;i<this.items.length;i++){
+            for(let j=0;j<this.select_index.length;j++){
+              if(i == this.select_index[j]){
+                 this.items[i].checked = true;
+                arr.push(this.items[i])
+              }else{
+                this.items[i].checked = false;
+              }
+            }
+          }
+          this.select_box = arr;
+          this.$apply();
+          this.postData();
+        }
+      },
+      changeModal(name,bool){
+
+        if(bool == 'true'){
+          this[name] = bool;
+        }else{
+          this[name] = false;
+        }
+        this.$apply();
+      },
+      playVideo(v){
+        this.show_video = true;
+        this.video_url = v.url;
+        this.$apply();
+      },
+      //预览图片
+      previewImage(item){
+        let that = this;
+        wx.previewImage({
+          current: item, // 当前显示图片的http链接
+          urls: [item] // 需要预览的图片http链接列表
+        })
+      },
+    };
+  }
+</script>

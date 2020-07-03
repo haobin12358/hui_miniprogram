@@ -1,0 +1,205 @@
+<style scoped lang="less" rel="stylesheet/less">
+    @import "../../styles/common.less";
+    .m-marketing{
+        .m-marketing-top{
+            position: relative;
+            .m-marketing-bg{
+                width: 100%;
+                height: 300rpx;
+            }
+            .m-top-content{
+                position: absolute;
+                top:0;
+                left: 0;
+                width: 100%;
+                height: 300rpx;
+                box-sizing: border-box;
+                padding: 32rpx;
+                .m-total-order-num{
+                   display: flex;
+                    flex-flow: row;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    font-size: 32rpx;
+                    padding-bottom: 26rpx;
+                    border-bottom: 1rpx solid rgba(0,0,0,0.16);
+                    .m-total-num{
+                        text-align: right;
+                    }
+                    .m-num{
+                        font-size: 56rpx;
+                        font-weight: bold;
+                    }
+                }
+                .m-today-order-num{
+                    padding-top: 32rpx;
+                    display: flex;
+                    flex-flow: row;
+                    align-items: center;
+                    justify-content: space-between;
+                    text-align: center;
+                    .num{
+                        font-size: 36rpx;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+        .m-nav{
+            width: 100%;
+            .flex-row(space-around);
+            span{
+                display: block;
+                padding: 20rpx 0;
+                &.active{
+                    font-weight: 500;
+                    border-bottom: 2px solid @common-color;
+                }
+            }
+        }
+        .m-marketing-content{
+            font-size: 32rpx;
+            padding: 0 32rpx;
+            .people-list{
+                .people-li{
+                    display: flex;
+                    flex-flow: row;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 10rpx 0;
+                    .people-img{
+                        width: 72rpx;
+                        height: 72rpx;
+                        border-radius: 50%;
+                    }
+                }
+            }
+        }
+    }
+</style>
+
+<template>
+    <view class="m-marketing" >
+        <view class="m-marketing-top">
+            <image src="../../images/bottom/marketing-bg.png"  class="m-marketing-bg"></image>
+            <view class="m-top-content">
+                <view class="m-total-order-num">
+                    <view class="m-total-order">
+                        <view class="m-num">1213</view>
+                        <view>总订单数</view>
+                    </view>
+                    <view class="m-total-num">
+                        <view class="m-num">1213</view>
+                        <view>总收益</view>
+                    </view>
+                </view>
+                <view class="m-today-order-num">
+                    <view class="item">
+                        <view>今日订单数</view>
+                        <view class="num">23</view>
+                    </view>
+                    <view class="item">
+                        <view>今日收益</view>
+                        <view class="num">23</view>
+                    </view>
+                    <view class="item">
+                        <view>今日邀请人数</view>
+                        <view class="num">23</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <view class="m-marketing-content">
+            <view class="m-nav">
+                <span class="{{item.value == select_nav.value ? 'active':''}}" wx:for="{{nav_list}}" wx:key="{{index}}" @tap="navTap({{item}})">{{item.label}}</span>
+            </view>
+            <view class="people-list">
+                <view class="people-li">
+                    <image class="people-img"></image>
+                    <span>张张</span>
+                    <span class="num">20</span>
+                </view>
+                <view class="people-li">
+                    <image class="people-img"></image>
+                    <span>张张</span>
+                    <span class="num">20</span>
+                </view>
+            </view>
+        </view>
+
+    </view>
+</template>
+<script >
+    import wepy from 'wepy';
+    import tip from '../../utils/tip';
+    import api from '../../api/api';
+    export default class Index extends wepy.page{
+        config = {
+            navigationBarTitleText: '营销管理',
+            enablePullDownRefresh:true
+        }
+        data = {
+            nav_list:[
+                {
+                    value:1,
+                    label:'团队管理'
+                },
+                {
+                    value:2,
+                    label:'人员分配'
+                },
+                {
+                    value:3,
+                    label:'升级审核'
+                }
+            ],
+            select_nav :  {
+                value:1,
+                label:'团队管理'
+            },
+            img_src: null,
+            user_info: {},
+            url:'',
+            new_img:null,
+            no_login:true
+        }
+        onPullDownRefresh() {
+            // 上拉刷新
+            if (!this.loading) {
+                this. getData();
+                // 处理完成后，终止下拉刷新
+            }
+        }
+        onLoad(){
+            // this.getData();
+        }
+        onShow(){
+        }
+        getData(){
+            let that = this;
+
+            wepy.request({
+                url: api.get_home + '?token=' +wx.getStorageSync('token'),
+                method:"get",
+                data:{}
+            }).then(res => {
+                if(res.data.status == 200){
+                    that.user_info = res.data.data;
+                    that.no_login = false;
+                    that.$apply();
+                    wx.stopPullDownRefresh();
+                }
+            })
+        }
+        methods = {
+            navTap(item){
+                this.select_nav = item;
+                // this.page_info.page_num = 1;
+                this.$apply();
+                this.getData();
+            }
+
+        }
+
+    }
+</script>

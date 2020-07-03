@@ -1,0 +1,169 @@
+<style scoped lang="less" rel="stylesheet/less">
+
+.m-codeDetail{
+  padding: 20rpx 30rpx 100rpx;
+    background-color: #FAFAFA;
+    min-height: 100vh;
+  .m-code{
+    width: 180rpx;
+    height: 180rpx;
+    /*background-color: #C1C1C1;*/
+  }
+  .m-code-content{
+    position: relative;
+    /*width: 610rpx;*/
+    height: 100rpx;
+    .m-code-bg{
+      position: absolute;
+      top:0;
+      left:0;
+      width: 610rpx;
+      height: 200rpx;
+    }
+    .m-code-text{
+      line-height: 100rpx;
+      /*position: absolute;*/
+      /*top:10rpx;*/
+      /*left:145rpx;*/
+
+      font-size: 40rpx;
+        font-weight: 500;
+      display: flex;
+      flex-flow: row;
+      align-items: center;
+      justify-content: center;
+      .m-bold{
+        font-weight: 600;
+        font-size: 60rpx;
+      }
+    }
+  }
+  .m-free-content{
+    padding: 20rpx 35rpx 100rpx;
+      background-color: #fff;
+    .m-free-img{
+      width: 610rpx;
+      height: 610rpx;
+        border-radius: 30rpx;
+    }
+      .m-ticket-img-box{
+          width: 610rpx;
+          height: 610rpx;
+          overflow: hidden;
+          position: relative;
+          background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
+          border-radius:30rpx;
+      }
+    .m-free-title{
+        position: absolute;
+        bottom:30rpx;
+        left: 20rpx;
+        width: 550rpx;
+      font-size: 40rpx;
+        color: #FFFFFF;
+      font-weight: 500;
+      text-shadow:0 3rpx 6rpx rgba(0,0,0,0.16);
+    }
+    .m-time{
+      font-size: 24rpx;
+        margin: 40rpx 0;
+    }
+  }
+  .m-foot-btn{
+    &.m-one{
+      &.disable{
+        background-color: #E0E0E0;
+        color: #999999;
+      }
+    }
+  }
+}
+</style>
+<template>
+    <view class="m-codeDetail " wx:if="{{detail}}">
+            <view class="m-code-content">
+<!--              <image src="{{img_src}}personal/free-code-bg.png" class="m-code-bg"></image>-->
+<!--              <view class="m-code-text" wx:if="{{detail.tsoqrcode}}">取票码： <image src="{{detail.tsoqrcode}}" @tap="previewImg({{detail.tsoqrcode}})" class="m-code"></image></view>-->
+                <view class="m-code-text">申请状态：{{detail.omstatus_zh}}</view>
+            </view>
+
+<!--      <view class="m-code-content">-->
+<!--        <image src="{{img_src}}personal/free-code-bg.png" class="m-code-bg"></image>-->
+<!--        <view class="m-code-text">取票码：<span class="m-bold">{{detail.tsocode}}</span></view>-->
+<!--      </view>-->
+      <view class="m-free-content" >
+          <view class="m-ticket-img-box" @tap="changeRoute('/pages/index/freeDetail')">
+              <image src="{{detail.primg}}" class="m-free-img" ></image>
+              <view class="m-free-title">{{detail.prname}}</view>
+          </view>
+        <view class="m-time" wx:if="{{detail.prtimelimeted}}">
+            <view>使用时间:{{detail.triptime}}</view>
+            <view >报名时间:{{detail.tsocreatetime}}</view>
+        </view>
+
+          <view class="m-flex-center"  wx:if="{{detail.omqrcode}}"><image src="{{detail.omqrcode}}" @tap="previewImg({{detail.omqrcode}})" class="m-code"></image></view>
+
+      </view>
+      <!--<view class="m-foot-btn m-one" wx:if="{{detail.umfstatus == -1 }}" @tap="changeRoute('/pages/personal/editRecord')">提交活动记录</view>-->
+      <!--<view class="m-foot-btn m-one disable" wx:if="{{detail.umfstatus == 0}}">已提交,待审核</view>-->
+      <!--<view class="m-foot-btn m-one disable" wx:if="{{detail.umfstatus == 1}}">审核通过已退款</view>-->
+    </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import api from '../../api/api';
+
+  export default class codeDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '订单详情'
+    };
+    components = {};
+    data = {
+      img_src: api.img_src,
+        omid:'',
+      detail:null
+    };
+    getData(){
+      let that = this;
+      that.loading = true;
+      that.$apply();
+      wepy.request({
+        url: api.order_get + '?token=' +wx.getStorageSync('token'),
+        method:"get",
+        data:{
+            omid:that.omid
+        }
+      }).then(res => {
+        if(res.data.status == 200){
+          that.detail = res.data.data;
+          that.$apply();
+        }
+      })
+    }
+    onLoad(options) {
+      if(options.omid){
+        this.omid = options.omid;
+        this.$apply();
+      }
+      this.getData();
+    }
+
+    methods = {
+      changeRoute(v){
+        let that = this;
+        wx.navigateTo({
+          url: v + '?prid=' + that.detail.prid
+        });
+      },
+      previewImg(item){
+        let that = this;
+        console.log(item)
+        wx.previewImage({
+          current: item, // 当前显示图片的http链接
+          urls: [item] // 需要预览的图片http链接列表
+        })
+      },
+    };
+  }
+</script>

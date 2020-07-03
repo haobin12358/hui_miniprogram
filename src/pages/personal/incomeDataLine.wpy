@@ -1,0 +1,331 @@
+<style scoped lang="less" rel="stylesheet/less">
+@import "../../styles/common";
+.m-incomeDataLine{
+  .m-date-more{
+    padding: 0 20rpx;
+    background-color: #F5F5F5;
+    border-radius: 30rpx;
+    height: 40rpx;
+    line-height: 40rpx;
+    color: #666666;
+  }
+  .m-search-box{
+    .flex-row(space-between);
+    padding: 26rpx 50rpx;
+    .m-year-month{
+      border: 1px solid @common-color;
+      border-radius: 50rpx;
+      /*width: 202rpx;*/
+      height: 40rpx;
+      line-height: 40rpx;
+      span{
+        display: inline-block;
+        width: 100rpx;
+        text-align: center;
+        &.active{
+          background-color: @common-color;
+        }
+      }
+    }
+  }
+  .m-echarts{
+    padding: 20rpx 0;
+    margin: 0 40rpx;
+    width: 670rpx;
+    height: 500rpx;
+    border-bottom: 2px solid #F4F4F4;
+  }
+  .m-detail{
+    .m-title-box{
+      padding: 20rpx 50rpx;
+      border-bottom: 1px solid @border-color;
+      .flex-row(space-between);
+      .m-title{
+        font-size: 34rpx;
+        font-weight: 500;
+      }
+    }
+    .m-item{
+      padding: 20rpx 50rpx;
+      border-bottom: 1px solid @border-color;
+      .flex-row(flex-start);
+      .m-icon{
+        width: 60rpx;
+        height: 60rpx;
+        margin-right: 20rpx;
+      }
+      .m-info{
+        height: 130rpx;
+        display: flex;
+        flex-flow: column;
+        align-items: flex-start;
+        justify-content: space-between;
+        .m-price-name{
+          width: 560rpx;
+        }
+        .m-name{
+          display: block;
+          width: 400rpx;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .m-price{
+          text-align: right;
+        }
+      }
+    }
+  }
+}
+</style>
+<template>
+    <view class="m-incomeDataLine">
+      <view class="m-search-box">
+        <view class="m-year-month">
+          <span class="{{status == 'month' ?'active':''}}" @tap="statusChange('month')">月</span>
+          <span class="{{status == 'year' ?'active':''}}" @tap="statusChange('year')">年</span>
+        </view>
+        <picker mode="date" wx:if="{{status == 'month'}}" value="{{date}}" start="2018-01" fields="month"  bindchange="bindDateChange">
+          <view class="m-date-more">
+            <span>{{date}}</span>
+            <image src="{{img_src}}common/icon-down-solid.png" class="m-down-solid"></image>
+          </view>
+        </picker>
+
+      </view>
+      <view class="m-echarts">
+        <ec-canvas id="mychart-dom-bar"  canvas-id="alldata-bar" ec="{{ ec }}"></ec-canvas>
+      </view>
+
+      <view class="m-detail">
+        <view class="m-title-box">
+          <span class="m-title">收支详情</span>
+          <picker bindchange="bindPickerChange" value="{{index}}" range-key="name" range="{{array}}">
+            <view class="m-date-more">
+              <span>{{array[index].name}}</span>
+              <image src="{{img_src}}common/icon-down-solid.png" class="m-down-solid"></image>
+            </view>
+          </picker>
+        </view>
+        <view class="m-no-data" wx:if="{{detail_list.length == 0}}">暂无详情</view>
+        <view class="m-item" wx:for="{{detail_list}}" wx:key="{{index}}">
+          <view class="m-flex-start">
+            <image src="{{img_src}}personal/income-active.png" wx:if="{{item.income}}" class="m-icon"></image>
+            <image src="{{img_src}}personal/income-out.png" wx:else class="m-icon"></image>
+            <view class="m-info">
+              <view class="m-flex-between m-price-name">
+                <span class="m-name">{{item.title}}</span>
+                <span class="m-price">{{item.amount}}</span>
+              </view>
+              <view>付款人：{{item.usname}}</view>
+              <view class="m-grey">{{item.time}}</view>
+            </view>
+          </view>
+        </view>
+
+      </view>
+    </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import * as echarts from '../ec-canvas/echarts';
+  import api from '../../api/api';
+  let chart = null;
+  let that = '';
+  let option = {
+    title: {
+      text: '收支统计'
+    },
+    color:['#EA8700','#FFCE00'],
+    tooltip: {
+      trigger: 'axis',
+      position: function (pos, params, dom, rect, size) {
+        // 鼠标在左侧时 tooltip 显示到右侧，鼠标在右侧时 tooltip 显示到左侧。
+        var obj = {top: 60};
+        obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+        return obj;
+      }
+    },
+    legend: {
+      data:['收益','支出'],
+      align: 'right',
+      right: 0,
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: []
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        name:'收益',
+        type:'line',
+        label:{
+          normal: {
+            show: true,
+            position: 'top',
+            color:'#999999'
+          },
+          emphasis: {
+            color: '#000'
+          }
+        },
+        data:[]
+      },
+      {
+        name:'支出',
+        type:'line',
+        label:{
+          normal: {
+            show: true,
+            position: 'top',
+            color:'#999999'
+          },
+          emphasis: {
+            color: '#000'
+          }
+        },
+        data:[]
+      }
+    ]
+  };
+  function initChart(canvas, width, height) {
+
+    chart = echarts.init(canvas, null, {
+      width: width,
+      height: height
+    })
+    canvas.setChart(chart)
+
+    chart.setOption(option)
+
+    chart.on('click',  function (params) {
+      // that.getData();
+      console.log(params,that);
+    });
+    return chart
+  }
+  export default class incomeDataLine extends wepy.page {
+    config = {
+      navigationBarTitleText: '',
+      enablePullDownRefresh: true,
+      'usingComponents': {
+        'ec-canvas': '../ec-canvas/ec-canvas'
+      }
+    };
+    components = {};
+    data = {
+      img_src:api.img_src,
+      ec: {
+        onInit: initChart
+      },
+      el: {
+        onInit: initChart
+      },
+      date:'2018-01',
+      status:'month',
+      array:[{
+        name:'全部',
+        value:''
+      },{
+        name:'收入',
+        value:'income'
+      },{
+        name:'支出',
+        value:'expenditure'
+      }],
+      index:0,
+      detail_list:[],
+      page_info:{
+        page_num:1,
+        page_size:10
+      },
+      total_count:0,
+      loading:false
+    };
+    getData(){
+      let that = this;
+      this.loading = true;
+      wepy.request({
+        url: api.data_statistics + '?token=' +wx.getStorageSync('token'),
+        data: {
+          option:'transaction',
+          year: that.status == 'month' ? that.date.split('-')[0]:'',
+          month:that.status == 'month' ? that.date.split('-')[1]:'',
+          filter:that.array[that.index].value,
+          page_num: that.page_info.page_num,
+          page_size: that.page_info.page_size
+        },
+        header: {
+          'content-type': 'application/json' // 默认值
+        }
+      }).then(res => {
+        that.loading = false;
+        if(res.data.status == 200){
+          if(that.page_info.page_num >1){
+            that.detail_list = that.detail_list.concat(res.data.data.details);
+          }else{
+            option.xAxis.data = res.data.data.date;
+            option.series[0].data = res.data.data.income;
+            option.series[1].data = res.data.data.expenditure;
+            console.log(option)
+            chart.setOption(option,true);
+            that.detail_list = res.data.data.details;
+          }
+          that.total_count = res.data.total_count;
+          that.$apply() ;
+        }
+
+      })
+    }
+    onLoad(options) {
+      let date = new Date();
+      this.date = date.getFullYear() + '-' + (date.getMonth() > 8 ? date.getMonth() +1 : '0' + (date.getMonth() +1));
+      this.getData();
+    }
+    onShow(){
+      that = this;
+    }
+
+    onReachBottom() {
+      // 下拉触底，先判断是否有请求正在进行中
+      // 以及检查当前请求页数是不是小于数据总页数，如符合条件，则发送请求
+      if(!this.loading && this.total_count > this.detail_list.length) {
+        this.page_info.page_num += 1;
+        this.$apply();
+        this.getData();
+      }
+    }
+    methods = {
+      bindDateChange(e){
+        this.date = e.detail.value;
+        this.page_info.page_num = 1;
+        this.$apply();
+        this.getData();
+      },
+      statusChange(v){
+        this.status = v;
+        this.page_info.page_num = 1;
+        this.$apply();
+        this.getData();
+      },
+      bindPickerChange: function(e) {
+        this.index = e.detail.value;
+        this.page_info.page_num = 1;
+        this.$apply();
+        this.getData();
+      },
+    };
+  }
+</script>

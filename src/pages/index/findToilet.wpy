@@ -1,0 +1,385 @@
+<style scoped lang="less" rel="stylesheet/less">
+@import "../../styles/common";
+.m-findToilet{
+  .m-add-icon{
+    position: fixed;
+    bottom: 82rpx;
+    right: 20rpx;
+    width: 98rpx;
+    height: 98rpx;
+  }
+  .m-add-toilet{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    box-sizing: border-box;
+    .m-toilet-center{
+      padding: 44rpx 30rpx;
+    }
+    .m-loc-img{
+      width: 70rpx;
+      height: 70rpx;
+      margin-right: 20rpx;
+    }
+    .m-upload{
+      width:200rpx;
+      height: 200rpx;
+      line-height: 200rpx;
+      text-align: center;
+      border: 1px dashed #C1C1C1;
+      color: #C1C1C1;
+      margin-left: 20rpx;
+      margin-top: 20rpx;
+      &.active{
+        border: none;
+      }
+      /*font-size: 40rpx;*/
+    }
+    .m-foot-btn{
+      width: 100%;
+      height: 98rpx;
+      line-height: 98rpx;
+      text-align: center;
+      background-color: #E0E0E0;
+      color: #999999;
+      font-size: 30rpx;
+      font-weight: 500;
+      /*margin-top: 50rpx;*/
+      &.active{
+        background-color: @common-color;
+        color: #000;
+      }
+
+    }
+  }
+}
+</style>
+<template>
+    <view class="m-findToilet">
+      <view class="m-map" >
+        <map id="map"
+             longitude="{{longitude}}"
+             latitude="{{latitude}}"
+             scale="{{scale}}"
+             controls="{{controls}}"
+             bindregionchange="onregionchange"
+             markers="{{markers}}"
+             include-points
+             polyline="{{polyline}}"
+             show-location
+             bindcontroltap="controlTap"
+             bindmarkertap="markerTap"
+             style="width: 100%; height: 100vh;"></map>
+      </view>
+      <cover-image class="m-add-icon" src="{{img_src}}index/map-add.png" @tap="onMapTap" wx:if="{{!select_loc}}">+</cover-image>
+      <cover-view class="m-add-toilet" wx:if="{{select_loc}}">
+        <cover-view class="m-toilet-center">
+          <cover-view class="m-flex-between">
+            <cover-view class="m-flex-start">
+              <cover-image class="m-loc-img" src="{{img_src}}index/toilet-loc-active.png" />
+              <cover-view>上传厕所位置</cover-view>
+            </cover-view>
+            <cover-view class="m-grey" @tap="colseModel('select_loc')">取消</cover-view>
+          </cover-view>
+          <cover-view class="m-flex-between">
+            <cover-view >
+              厕所图片
+            </cover-view>
+            <cover-view class="m-flex-end">
+              <cover-image wx:if="{{select_img}}" src="{{select_img}}" @tap="previewImage({{select_img}})"  class="m-upload active"></cover-image>
+              <cover-view  class="m-upload" @tap="uploadImg">
+                +
+              </cover-view>
+            </cover-view>
+          </cover-view>
+        </cover-view>
+
+        <cover-view class="m-foot-btn {{select_img&&select_loc ?'active':''}}" @tap="sureSubmit">
+          上传
+        </cover-view>
+      </cover-view>
+      <cover-view class="m-add-toilet" wx:if="{{detail_info}}">
+        <cover-view class="m-toilet-center">
+          <cover-view class="m-flex-between">
+            <cover-view class="m-grey" @tap="colseModel('detail_info')">关闭</cover-view>
+            <cover-view  @tap="showLine">前往</cover-view>
+          </cover-view>
+          <cover-viw class="m-flex-between">
+            <cover-view >
+              厕所图片
+            </cover-view>
+            <cover-image  src="{{detail_info.toimage}}" @tap="previewImage({{detail_info.toimage}})"  class="m-upload active"></cover-image>
+          </cover-viw>
+        </cover-view>
+
+      </cover-view>
+    </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import tip from '../../utils/tip';
+  import api from '../../api/api';
+
+  export default class findToilet extends wepy.page {
+    config = {
+      navigationBarTitleText: '找厕所'
+    };
+    components = {};
+    data = {
+      img_src:api.img_src,
+      longitude:null,
+      latitude:null,
+      markers: [],
+      polyline: [{
+        points: [{
+          longitude: 113.3245211,
+          latitude: 23.10229
+        }, {
+          longitude: 113.324520,
+          latitude: 23.21229
+        }],
+        color:"#FF0000DD",
+        width: 2,
+        dottedLine: true
+      }],
+      controls: [{
+        id: 1,
+        iconPath: api.img_src + 'index/map-loc.png',
+        position: {
+          left: 0,
+          top: 300 - 50,
+          width: 50,
+          height: 50
+        },
+        clickable: true
+      }],
+      allpoint:[],
+      select_loc:null,
+      select_img:'',
+      scale:14,
+      detail_info:null
+    };
+    getLocation(){
+      let that = this;
+      wx.getLocation({
+        type: 'wgs84',
+        success (res) {
+          that.latitude = res.latitude;
+          that.longitude = res.longitude;
+          that.scale = 14;
+          that.allpoint.push({
+            latitude:res.latitude,
+            longitude:res.longitude
+          });
+          that.getData();
+
+          that.$apply();
+        }
+      })
+
+    }
+    postData(){
+      let that = this;
+      tip.loading();
+      wepy.request({
+        url: api.add_toilet + '?token=' +wx.getStorageSync('token'),
+        method:"post",
+        data:{
+          longitude:that.select_loc.longitude,
+          latitude:that.select_loc.latitude,
+          toimage:that.select_img
+        }
+      }).then(resule => {
+        if(resule.data.status == 200){
+          tip.success(resule.data.message);
+          that.select_loc = null;
+          that.select_img = '';
+          that.$apply();
+        }
+      })
+    }
+    getData(){
+      let that = this;
+      tip.loading();
+      wepy.request({
+        url: api.toilet_list + '?token=' +wx.getStorageSync('token'),
+        method:"get",
+        data:{
+          scale:that.scale,
+          latitude:that.latitude,
+          longitude: that.longitude
+        }
+      }).then(resule => {
+        if(resule.data.status == 200){
+          let data = resule.data.data;
+          that.markers = [];
+          for(let i=0;i<data.length;i++){
+            that.markers.push({
+              iconPath: api.img_src + "index/toilet-loc.png",
+              id: data[i].toid,
+              latitude: data[i].latitude,
+              longitude: data[i].longitude,
+              width: 45,
+              height: 45
+            })
+            // that.allpoint.push({
+            //   latitude:data[i].latitude,
+            //   longitude:data[i].longitude
+            // });
+          }
+          that.$apply();
+        }
+      })
+    }
+    onLoad(options) {
+
+    }
+    onShow(){
+      this.getLocation();
+    }
+
+    methods = {
+      //视野变化
+      onregionchange(e){
+        let that = this;
+        wx.createMapContext('map').getScale({
+          success:function(res) {
+            if(res.scale < that.scale ){
+              that.scale = res.scale;
+              that.$apply();
+              that.getData();
+            }
+          }
+        })
+
+      },
+      //点击地图获取地理位置
+      onMapTap(e){
+        let that  = this;
+        wx.chooseLocation({
+          success:function (res) {
+            that.select_loc = res;
+            // that.latitude = res.latitude;
+            // that.longitude = res.longitude;
+            // that.markers = [
+            //   {
+            //     iconPath: api.img_src + "index/icon-point.png",
+            //     id: 0,
+            //     latitude: res.latitude,
+            //     longitude: res.longitude,
+            //     width: 45,
+            //     height: 45,
+            //     callout:{
+            //       content:that.time,
+            //       display:'ALWAYS',
+            //       padding:10
+            //     }
+            //   }
+            // ]
+            that.$apply();
+          },
+          error:function (res) {
+            console.log(res,'error')
+          }
+        })
+      },
+      //控制点点击
+      controlTap(){
+        this.getLocation();
+      },
+      //标记点点击
+      markerTap(e){
+        let id  = e.markerId;
+        let that = this;
+        tip.loading();
+        wepy.request({
+          url: api.get_toilet + '?token=' +wx.getStorageSync('token'),
+          method:"get",
+          data:{
+            toid:id
+          }
+        }).then(resule => {
+          if(resule.data.status == 200){
+            let data = resule.data.data;
+            that.detail_info = data;
+            that.$apply();
+          }
+        })
+
+      },
+      //调起导航
+      showLine(){
+        let that = this;
+        wx.openLocation({ // 打开微信内置地图，实现导航功能（在内置地图里面打开地图软件）
+          latitude: Number(that.detail_info.latitude),
+          longitude: Number(that.detail_info.longitude),
+          name:'厕所',
+          success:function(res){
+            console.log(res);
+          },
+          fail:function(res){
+            console.log(res);
+          }
+        })
+      },
+      //选择证明
+      uploadImg(){
+        let that = this;
+        // if(that.form_data.img){
+        //   return
+        // }
+        wx.chooseImage({
+          count: 1,
+          sizeType: ['original', 'compressed'],
+          sourceType: ['album', 'camera'],
+          success (res) {
+            // tempFilePath可以作为img标签的src属性显示图片
+            const tempFilePaths = res.tempFilePaths;
+            tip.loading();
+            wx.uploadFile({
+              url: api.upload,
+              filePath: tempFilePaths[0],
+              name: 'file',
+              formData: {
+                token:wx.getStorageSync('token'),
+                type:'scenicspot'
+              },
+              success (res1){
+                // const data = res.data
+                let data = JSON.parse(res1.data);
+                //do something
+                tip.loaded();
+                that.select_img = api.api + data.data;
+                that.$apply();
+              }
+            })
+
+          }
+        })
+      },
+      //上传
+      sureSubmit(){
+        if(this.select_loc && this.select_img){
+          this.postData();
+        }
+      },
+      //关闭/取消
+      colseModel(name){
+        this[name] = null;
+        this.select_img = '';
+        this.$apply();
+      },
+      //预览图片
+      previewImage(item){
+        let that = this;
+        wx.previewImage({
+          current: item, // 当前显示图片的http链接
+          urls: [item] // 需要预览的图片http链接列表
+        })
+      },
+    };
+  }
+</script>

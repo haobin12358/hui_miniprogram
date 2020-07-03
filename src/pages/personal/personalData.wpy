@@ -1,0 +1,362 @@
+<style scoped lang="less" rel="stylesheet/less">
+  @import "../../styles/common";
+  .m-personalData{
+    .m-search-box{
+      .flex-row(space-between);
+      padding: 26rpx 50rpx;
+      .m-year-month{
+        border: 1px solid @common-color;
+        border-radius: 50rpx;
+        /*width: 202rpx;*/
+        height: 40rpx;
+        line-height: 40rpx;
+        span{
+          display: inline-block;
+          width: 100rpx;
+          text-align: center;
+          &.active{
+            background-color: @common-color;
+          }
+        }
+      }
+      .m-date-more{
+        padding: 0 20rpx;
+        background-color: #F5F5F5;
+        border-radius: 30rpx;
+        height: 40rpx;
+        line-height: 40rpx;
+        color: #666666;
+      }
+    }
+    .m-echarts{
+      padding: 20rpx 0;
+      margin: 0 40rpx;
+      width: 670rpx;
+      height: 500rpx;
+      border-bottom: 2px solid #F4F4F4;
+    }
+    .m-user-box{
+      padding: 20rpx 50rpx;
+      .m-title{
+        font-weight: 500;
+        font-size: 34rpx;
+      }
+      .m-grey{
+        font-size: 24rpx;
+        font-weight: 300;
+      }
+      .m-user-list{
+        margin-top: 20rpx;
+        .flex-row(flex-start);
+        width: 100%;
+        overflow: hidden;
+        li{
+          flex-shrink: 0;
+          width: 108rpx;
+          margin-right: 22rpx;
+          text-align: center;
+          position: relative;
+          .m-num{
+            position: absolute;
+            top:0;
+            right: 5rpx;
+            width: 25rpx;
+            height: 25rpx;
+            line-height: 25rpx;
+            font-size: 18rpx;
+            border-radius: 100%;
+            background-color: @common-color;
+          }
+          .m-img{
+            width: 108rpx;
+            height: 108rpx;
+            border-radius: 50%;
+            box-shadow:0px 3px 4px rgba(0,0,0,0.1);
+          }
+          .m-name{
+            width: 100rpx;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+  }
+</style>
+<template>
+  <view class="m-personalData" wx:if="{{img_src}}">
+    <view class="m-search-box">
+      <view class="m-year-month">
+        <span class="{{status == 'month' ?'active':''}}" @tap="statusChange('month')">月</span>
+        <span class="{{status == 'year' ?'active':''}}" @tap="statusChange('year')">年</span>
+      </view>
+      <picker mode="date" wx:if="{{status == 'month'}}" value="{{date}}" start="2018" fields="year"  bindchange="bindDateChange">
+        <view class="m-date-more">
+          <span>{{date}}年</span>
+          <image src="{{img_src}}common/icon-down-solid.png" class="m-down-solid"></image>
+        </view>
+      </picker>
+
+    </view>
+    <view class="m-echarts">
+      <ec-canvas id="mychart-dom-bar"  canvas-id="alldata-bar" ec="{{ ec }}"></ec-canvas>
+    </view>
+    <view class="m-echarts">
+      <ec-canvas id="mychart-bar"  canvas-id="mychart-bar" ec="{{ el }}"></ec-canvas>
+    </view>
+   <view class="m-user-box">
+     <view class="m-flex-between">
+       <span class="m-title">参团2次及以上用户</span>
+       <view class="m-flex-end" wx:if="{{user_list.length >= 5}}" @tap="changeRoute('/pages/personal/personalDataList')">
+         <span class="m-grey">更多用户</span>
+         <image src="{{img_src}}common/icon-more.png" class="m-icon-more"></image>
+       </view>
+     </view>
+     <view class="m-no-data" wx:if="{{user_list.length == 0}}">暂无用户</view>
+     <ul class="m-user-list" wx:else>
+       <li  wx:for="{{user_list}}" wx:key="{{index}}">
+         <span class="m-num">{{item.repeat}}</span>
+         <image src="{{img_url}}{{item.usheader}}" class="m-img"></image>
+         <view class="m-name">{{item.usname}}</view>
+       </li>
+
+     </ul>
+   </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import * as echarts from '../ec-canvas/echarts';
+  import api from '../../api/api';
+  let chart = null,allChart = null;
+  let that = '';
+  let allOption = {
+    title: {
+      text: '参团总人次'
+    },
+    color:['#FFCE00'],
+    tooltip : {
+      trigger: 'axis',
+      position: function (pos, params, dom, rect, size) {
+        // 鼠标在左侧时 tooltip 显示到右侧，鼠标在右侧时 tooltip 显示到左侧。
+        var obj = {top: 60};
+        obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+        return obj;
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type : 'category',
+      splitLine: {show:false},
+      data : []
+    },
+    yAxis: {
+      type : 'value'
+    },
+    series: [
+      {
+        name: '生活费',
+        type: 'bar',
+        stack: '总量',
+        label: {
+          normal: {
+            show: true,
+            position: 'top',
+            color:'#999999'
+          },
+          emphasis: {
+            color: '#000'
+          }
+        },
+        data:[]
+      }
+    ]
+  };
+  let option = {
+    title: {
+      text: '参团用户数据',
+      textStyle:{
+        fontSize:17
+      }
+    },
+    color:['#EA8700','#FFCE00'],
+    tooltip : {
+      trigger: 'axis',
+      position: function (pos, params, dom, rect, size) {
+        // 鼠标在左侧时 tooltip 显示到右侧，鼠标在右侧时 tooltip 显示到左侧。
+        var obj = {top: 60};
+        obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+        return obj;
+      }
+    },
+    legend: {
+      data: ['参团用户数', '参团2次及以上用户数'],
+      align: 'right',
+      right: 0,
+      orient: 'vertical',
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type : 'category',
+      splitLine: {show:false},
+      data : []
+    },
+    yAxis: {
+      type : 'value'
+    },
+    series: [
+      {
+        name: '参团用户数',
+        type: 'bar',
+        label: {
+          normal: {
+            show: true,
+            position: 'top',
+            color:'#999999'
+          },
+          emphasis: {
+            color: '#000'
+          }
+        },
+        data: []
+      },
+      {
+        name: '参团2次及以上用户数',
+        type: 'bar',
+        label: {
+          normal: {
+            show: true,
+            position: 'top',
+            color:'#999999'
+          },
+          emphasis: {
+            color: '#000'
+          }
+        },
+        data:[]
+      }
+    ]
+  };
+  function initAllChart(canvas, width, height) {
+    allChart = echarts.init(canvas, null, {
+      width: width,
+      height: height
+    })
+    canvas.setChart(allChart)
+    allChart.setOption(allOption,true)
+    return chart
+  }
+  function initChart(canvas, width, height) {
+
+    chart = echarts.init(canvas, null, {
+      width: width,
+      height: height
+    })
+    canvas.setChart(chart)
+    console.log(chart,'adads')
+    chart.setOption(option,true)
+
+    // chart.on('click',  function (params) {
+    //   that.getData();
+    //   console.log(params,that);
+    // });
+    return chart
+  }
+  export default class personalData extends wepy.page {
+    config = {
+      navigationBarTitleText: '人员数据',
+      'usingComponents': {
+        'ec-canvas': '../ec-canvas/ec-canvas'
+      }
+    };
+    components = {};
+    data = {
+      img_src:api.img_src,
+      img_url:api.api,
+      ec: {
+        onInit: initAllChart
+      },
+      el: {
+        onInit: initChart
+      },
+      date:'2018',
+      status:'month',
+      user_list:[],
+    }
+    getData(){
+      let that = this;
+      wepy.request({
+        url: api.data_statistics + '?token=' +wx.getStorageSync('token'),
+        data: {
+          option:'personnel',
+          year: that.status == 'month' ? that.date : ''
+        },
+        header: {
+          'content-type': 'application/json' // 默认值
+        }
+      }).then(res => {
+        if(res.data.status == 200){
+          option.xAxis.data = res.data.data.date;
+          option.series[0].data = res.data.data.people_num;
+          option.series[1].data = res.data.data.repeat_num;
+          allOption.xAxis.data = res.data.data.date;
+          allOption.series[0].data = res.data.data.total_num;
+          allChart.setOption(allOption,true);
+          chart.setOption(option,true);
+
+          if(option.series[0].data.length ==0 ){
+            that.no_data = true;
+          }else{
+            that.no_data = false;
+          }
+          that.user_list = res.data.data.repeat_user;
+          that.$apply();
+        }
+
+      })
+    }
+
+    onLoad(options) {
+      let date = new Date();
+      this.date = date.getFullYear();
+      this.getData();
+    }
+    onShow(){
+      that = this;
+    }
+    methods = {
+      bindDateChange(e){
+        this.date = e.detail.value;
+        this.$apply();
+        this.getData();
+      },
+      statusChange(v){
+        this.status = v;
+        this.$apply();
+        this.getData();
+      },
+      changeRoute(v){
+        let that = this;
+
+        wx.navigateTo({
+          url: v +'?year=' + that.date
+        });
+
+
+
+      },
+    };
+  }
+</script>

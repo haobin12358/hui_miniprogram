@@ -1,0 +1,523 @@
+<style scoped lang="less" rel="stylesheet/less">
+    @import "../../styles/common";
+    .m-index{
+        width: 100%;
+        background-color: #fff;
+        color: #172434;
+        .m-product-content{
+            position: absolute;
+            top: 560rpx;
+            left: 0;
+            background-color: #fff;
+            padding: 32rpx;
+            border-radius:48rpx 48rpx 0 0;
+            width: 100%;
+            box-sizing: border-box;
+            .m-title{
+                .flex-row(space-between);
+                font-size: 32rpx;
+                margin-bottom: 30rpx;
+                font-weight: 500;
+                .select-img{
+                    width: 40rpx;
+                    height: 40rpx;
+                }
+            }
+            .activity-product{
+                width: 100%;
+                overflow-x: scroll;
+                .flex-row(flex-start);
+                margin-bottom: 60rpx;
+                .product{
+                    margin-right: 32rpx;
+                    .m-ticket-img{
+                        width: 280rpx;
+                        height: 280rpx;
+                        border-radius:16rpx;
+                    }
+                    .m-ticket-num{
+                        .flex-row(space-between);
+                        font-size: 28rpx;
+                        .m-ticket-name{
+                            width: 170rpx;
+                            overflow:hidden;
+                            text-overflow:ellipsis;
+                            white-space:nowrap;
+                        }
+                    }
+                    .m-ticket-price{
+                      font-weight: bold;
+                    }
+                }
+            }
+        }
+        .m-ticket-list{
+            /*padding: 25rpx;*/
+            .flex-row(flex-start);
+            align-items: flex-start;
+            flex-wrap: wrap;
+            .m-one-ticket{
+                width: 330rpx;
+                padding-bottom: 10rpx;
+                &:nth-child(odd){
+                    margin-right: 24rpx;
+                }
+                .m-img-box{
+                    position: relative;
+                    .m-end-img{
+                        position: absolute;
+                        top:0;
+                        left:0;
+                        /*background-color: rgba(0,0,0,0.2);*/
+                        width: 330rpx;
+                        height: 460rpx;
+                        border-radius:16rpx;
+                    }
+                }
+                .m-ticket-img{
+                    width: 330rpx;
+                    height: 460rpx;
+                    border-radius:16rpx;
+                }
+                .m-ticket-name{
+                    width: 330rpx;
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 2;
+                    overflow: hidden;
+                    font-size: 28rpx;
+                    font-weight: 500;
+                    padding: 5rpx 0;
+                    height: 82rpx;
+                    .m-title-label{
+                        display: inline-block;
+                        padding: 4rpx 12rpx;
+                        border: 1px solid #F44336;
+                        color: #F44336;
+                        font-size: 24rpx;
+                        margin-right: 8rpx;
+                    }
+                }
+                .m-ticket-num{
+                    .flex-row(space-between);
+                    .m-bold{
+                        font-weight: bold;
+                    }
+                }
+                .m-ticket-price{
+                    font-size: 24rpx;
+
+                    s{
+                        text-decoration:line-through;
+                        color: #999999;
+                    }
+                }
+                .m-ticket-activity{
+                   .flex-row(space-between);
+                    padding-top: 10rpx;
+                    font-size: 24rpx;
+                    width: 330rpx;
+                    color: @grey-color;
+                    .m-activity-name{
+                        padding: 4rpx 12rpx;
+                        background-color: #FF9500;
+                        color: #fff;
+                        border-radius: 16rpx;
+                        &.going{
+                            background-color: #F44336;
+                        }
+                        &.end{
+                            background-color: #CCCCCC;
+                        }
+                    }
+                    .m-activity-detail{
+                        .flex-row(flex-end);
+                        .people-num{
+                            color: #666666;
+                        }
+                        .head-box{
+                            .flex-row(flex-end);
+                            position: relative;
+                            .m-head{
+                                width: 40rpx;
+                                height: 40rpx;
+                                border-radius: 50%;
+                                border: 1rpx solid #fff;
+                                background-color: #0BB20C;
+                            }
+                            &.multi{
+                                padding-left: 30rpx;
+                                &:first-child{
+                                    position: absolute;
+                                    right: 20rpx;
+                                }
+                            }
+                        }
+                    }
+                 }
+            }
+        }
+        .m-modal{
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.16);
+            position: fixed;
+            top:0;
+            left: 0;
+            z-index: 100;
+            .m-modal-state{
+                width: 600rpx;
+                background-color: #fff;
+                padding: 20rpx;
+                position: fixed;
+                top:0;
+                left:0;
+                right:0;
+                bottom:0;
+                margin: auto;
+                max-height: 500rpx;
+                .m-title{
+                    padding-bottom: 20rpx;
+                    font-size: 30rpx;
+                    font-weight: 500;
+                    width: 100%;
+                    text-align: left;
+                }
+                .m-row{
+                    padding: 20rpx;
+                    width: 100%;
+                    box-sizing: border-box;
+                    border: 1px solid @common-color;
+                    margin-bottom: 20rpx;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    &.active{
+                        background-color: @common-color;
+                    }
+                }
+                .m-row-item{
+                    height: 430rpx;
+                    .flex-col(space-around);
+                }
+            }
+        }
+    }
+</style>
+<template>
+    <view class="m-index">
+        <swiper
+                indicator-dots="{{indicatorDots}}"
+                autoplay="{{autoplay}}"
+                interval="{{interval}}"
+                duration="{{duration}}"
+                style="height: 600rpx;"
+        >
+            <block wx:for="{{scroll_data}}" wx:key="item">
+                <swiper-item >
+                    <image src="{{item.mpbpicture}}" @tap="imgTap({{item}})" class="slide-image" style="width: 750rpx;height: 600rpx;" />
+                </swiper-item>
+            </block>
+        </swiper>
+        <view class="m-product-content">
+            <view class="activity-product">
+                <view class="product" wx:for="{{activity_list}}" wx:key="{{index}}" @tap="changeRoute('/pages/index/freeDetail',{{item}})">
+                    <image src="{{item.primg}}" class="m-ticket-img"></image>
+                    <view class="m-ticket-num">
+                        <view class="m-ticket-name">{{item.prname}}</view>
+                        <view class="m-ticket-price"><s>¥{{item.prlineprice}}</s></view>
+                    </view>
+                </view>
+            </view>
+            <view class="m-title">
+                <view >全部商品</view>
+                <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+                    <image src="../../images/bottom/select.png" class="select-img"></image>
+                </picker>
+
+            </view>
+            <view class="m-ticket-list">
+                <view class="m-one-ticket" wx:for="{{data_list}}" wx:key="{{index}}" @tap="changeRoute('/pages/index/freeDetail',{{item}})">
+                    <view class="m-img-box">
+                        <image src="{{item.primg}}" class="m-ticket-img"></image>
+                        <!--<image src="{{img_src}}personal/img-end-new.png" class="m-end-img" wx:if="{{item.prstatus > 1}}"></image>-->
+                        <!--<image src="{{img_src}}personal/img-start-new.png" class="m-end-img" wx:if="{{item.prstatus == 0}}"></image>-->
+                    </view>
+                    <view class="m-ticket-name"><span class="m-title-label" wx:if="{{item.prtimelimeted == 1}}">活动购</span>{{item.prname}}</view>
+                    <view class="m-ticket-num">
+                        <view class="m-ticket-price"><span class="m-bold">¥{{item.prtrueprice}}</span></view>
+                        <view class="m-ticket-price"><s>¥{{item.prlineprice}}</s></view>
+                    </view>
+                    <view class="m-ticket-activity" wx:if="{{item.prtimelimeted == 1}}">
+                        <view class="m-activity-name {{item.prstatus ==3? 'end': (item.prstatus ==1?'going':'')}}" >{{item.prstatus_zh}}</view>
+                        <view class="m-activity-detail">
+                            <span class="people-num">{{item.apply_num_str}}</span>
+                            <view class="head-box {{item.buyer_avatar.length == 2?'multi':''}}" >
+                                <image src="{{i}}" wx:for="{{item.buyer_avatar}}" wx:key="{{i}}"  wx:for-item="i" class="m-head"></image>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+
+            </view>
+            <bottom wx:if="{{data_list.length == total_count}}"></bottom>
+        </view>
+
+        <!--    <official-account bindload="official"></official-account>-->
+    </view>
+</template>
+
+<script >
+    import wepy from 'wepy';
+    import api from '../../api/api';
+    import tip from '../../utils/tip';
+    import bottom from '../../components/common/bottom';
+    export default class IndexIndex extends wepy.page {
+        config = {
+            navigationBarTitleText: '优惠下沙',
+            enablePullDownRefresh:true
+        }
+        components = {
+            bottom
+        }
+        data = {
+            mynum:'2019-06-27 12:22',
+            img_src:null,
+            scroll_data: [],
+            indicatorDots: true,
+            autoplay: true,
+            interval: 5000,
+            duration: 1000,
+            page_info:{
+                page_size:10,
+                page_num:1
+            },
+            total_count:0,
+            data_list:[],
+            activity_list:[],
+            plid:'',
+            route:'',
+            route_name:'',
+            array: ['全部','普通商品', '活动商品'],
+            index:0
+        }
+        //获取轮播图
+        getImg(id){
+            let that = this;
+            wepy.request({
+                url: api.list_mp_banner + '?token=' +wx.getStorageSync('token'),
+                data: {
+                    mpbposition: 0
+                },
+                header: {
+                    'content-type': 'application/json' // 默认值
+                }
+            }).then(res => {
+                that.scroll_data = res.data.data;
+                wx.stopPullDownRefresh();
+                that.$apply();
+            })
+        }
+        getActivity(){
+            let that = this;
+            that.loading = true;
+            wepy.request({
+                url: api.product_list + '?token=' +wx.getStorageSync('token') + '&prtimelimeted=1',
+                method:"get",
+                data:{}
+            }).then(res => {
+                if(res.data.status == 200){
+                    that.activity_list = res.data.data;
+                    that.loading = false;
+                    that.$apply();
+                }
+            })
+        }
+        getData(type){
+            let that = this;
+            that.loading = true;
+            let params = {}
+            if(type === 0 || type === 1){
+                params = {
+                    page_num: that.page_info.page_num,
+                    page_size:that.page_info.page_size,
+                    prtimelimeted: type
+                }
+            }else{
+                params = {
+                    page_num: that.page_info.page_num,
+                    page_size:that.page_info.page_size
+                }
+            }
+            wepy.request({
+                url: api.product_list + '?token=' +wx.getStorageSync('token'),
+                method:"get",
+                data:params
+            }).then(res => {
+                if(res.data.status == 200){
+                    if(that.page_info.page_num > 1){
+                        that.data_list = that.data_list.concat(res.data.data);
+                    }else{
+                        that.data_list = res.data.data;
+                    }
+                    that.total_count = res.data.total_count;
+                    that.loading = false;
+                    that.$apply();
+                    wx.stopPullDownRefresh();
+                }
+            })
+        }
+        onPullDownRefresh() {
+            this.page_info.page_num = 1;
+            this.$apply();
+            // 上拉刷新
+            this.getImg();
+            this.getData();
+        }
+        onReachBottom() {
+            // 下拉触底，先判断是否有请求正在进行中
+            // 以及检查当前请求页数是不是小于数据总页数，如符合条件，则发送请求
+            if(!this.loading && this.total_count > this.data_list.length) {
+                this.page_info.page_num += 1;
+                this.$apply();
+                this.getData();
+            }
+        }
+        onLoad(options){
+
+
+            if(options.scene){
+                console.log("has scene");
+                let scene = decodeURIComponent(options.scene);
+                console.log("scene is ", scene);
+                let arrPara = scene.split("&");
+                let arr_params = [];
+                arr_params = arrPara[0].split("=");
+                wepy.request({
+                    url: api.get_params + '?token=' +wx.getStorageSync('token'),
+                    data: {
+                        key: arr_params[0],
+                        value: arr_params[1]
+                    },
+                    header: {
+                        'content-type': 'application/json' // 默认值
+                    }
+                }).then(res => {
+                    let data = res.data.data;
+                    let url = '';
+                    let arr = data.split('&');
+                    let params_arr = [];
+                    for(let i in arr){
+
+                        let _arr = arr[i].split('=');
+                        if(_arr[0] == 'secret_usid'){
+                            wx.setStorageSync('secret_usid',_arr[1]);
+                            console.log(wx.getStorageSync('secret_usid'));
+                            // params_arr.push(arr[i]);
+                        }
+                        if(_arr[0] == 'page'){
+                            url = _arr[1];
+                        }else{
+                            params_arr.push(arr[i]);
+                        }
+                    }
+                    if(params_arr.length >0 && url != '' ){
+                        url = url + '?' + params_arr.join('&');
+                    }
+                    if(url != ''){
+                        wx.navigateTo({
+                            url: url
+                        });
+                    }
+
+                });
+            }else if(options.page){
+                let url = options.page;
+                let arr = [];
+                for(let i in options){
+                    if(i == 'secret_usid'){
+                        wx.setStorageSync('secret_usid',options[i]);
+                        console.log(wx.getStorageSync('secret_usid'));
+                        // params_arr.push(arr[i]);
+                    }
+                    if(i != 'page'){
+                        arr.push(i + '=' +options[i])
+                    }
+                }
+                if(arr.length >0){
+                    url = url + '?' + arr.join('&');
+                }
+                wx.navigateTo({
+                    url: url
+                });
+            }
+            this.getImg();
+            this.getActivity();
+            this.getData();
+
+
+            this.img_src = api.img_src;
+            this.$apply();
+        }
+        //改变路由
+        goRoute(v,name) {
+
+            let that = this;
+            switch (name) {
+                default:
+                    wx.navigateTo({
+                        url: v+'?plid='+that.plid
+                    });
+                    break;
+            }
+
+        }
+        onShow(){
+            // if(wx.getStorageSync('token')){
+            //   this.getId();
+            // }
+            this.show_tel = false;
+            this.$apply();
+        }
+        methods = {
+            //轮播图点击
+            imgTap(item){
+                wx.navigateTo({
+                    url: item.contentlink
+                });
+            },
+            //改变路由
+            changeRoute(v,item) {
+                let that = this;
+                if(item.traded){
+                    wx.navigateTo({
+                        url: v + '?prid=' + item.prid
+                    });
+                }else{
+                    wx.navigateTo({
+                        url: v + '?prid=' + item.prid
+                    });
+                }
+
+
+            },
+
+            lower(){
+                if(this.total_count > this.id_list.length) {
+                    this.page_info.page_num += 1;
+                    this.$apply();
+                    this.getId();
+                }
+            },
+            bindPickerChange: function(e) {
+                console.log('picker发送选择改变，携带值为', e.detail.value)
+                this.index = e.detail.value
+                let type = ''
+                type = this.index == 0?'':(this.index ==1 ?0:1)
+                this.$apply();
+                this.getData(type);
+            },
+
+        }
+    }
+</script>

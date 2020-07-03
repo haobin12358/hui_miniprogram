@@ -1,0 +1,194 @@
+<style scoped lang="less" rel="stylesheet/less">
+    @import "../../styles/edit";
+    @import "../../styles/iconfont";
+    .iconfont {
+        display: inline-block;
+        padding: 8px 8px;
+        width: 28rpx;
+        height: 28rpx;
+        cursor: pointer;
+        /*font-size: 28rpx;*/
+    }
+
+    .toolbar {
+        box-sizing: border-box;
+        /* border: 1px solid #ccc; */
+        border-bottom: 0;
+        font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+        display: flex;
+        flex-flow: row;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+
+    .ql-container {
+        box-sizing: border-box;
+        padding: 12rpx 15rpx;
+        width: 100%;
+        min-height: 40vh;
+        height: auto;
+        /* border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc; */
+        background: #fff;
+        /*margin-top: 20px;*/
+        font-size: 28rpx;
+        line-height: 1.5;
+    }
+    .ql-active {
+        color: #06c;
+    }
+</style>
+<template>
+    <view>
+        <view class='toolbar' bindtap="format">
+            <i class="iconfont icon-zitijiacu {{formats.bold ? 'ql-active' : ''}}" data-name="bold"></i>
+            <i class="iconfont icon-zitixieti {{formats.italic ? 'ql-active' : ''}}" data-name="italic"></i>
+            <i class="iconfont icon-zitixiahuaxian {{formats.underline ? 'ql-active' : ''}}" data-name="underline"></i>
+            <i class="iconfont icon-outdent" data-name="indent" data-value="-1"></i>
+            <i class="iconfont icon-indent" data-name="indent" data-value="+1"></i>
+            <i class="iconfont icon-charutupian" bindtap="insertImage"></i>
+<!--            <image src="../../images/common/icon-video.png" class="iconfont icon-video" bindtap="insertVideo"></image>-->
+        </view>
+        <editor
+                id="editor"
+                class="ql-container"
+                placeholder="{{placeholder}}"
+                showImgSize
+                showImgToolbar
+                showImgResize
+                bindstatuschange="onStatusChange"
+                bindinput="onEditorChange"
+                read-only="{{readOnly}}"
+                bindready="onEditorReady">
+        </editor>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import api from '../../api/api';
+
+    export default class Edit extends wepy.component {
+        props={
+          context:{
+              type:String,
+              default:''
+          },
+          type:{
+            type:String,
+            default:''
+          }
+        }
+        data = {
+            readOnly:false,
+            placeholder:'活动详情，可详细介绍活动值得参加的特点，以及行程，\n' +
+                '注意事项等。'
+        }
+
+        onLoad(options) {
+
+        }
+        events = {
+            'index-broadcast': (value) => {
+              console.log(value)
+                this.context = value;
+                this.$apply();
+            }
+        }
+        methods = {
+            editNotice(){
+                const that = this
+                // that.editorCtx.setContents({
+                //     html:that.context
+                // })
+            },
+            readOnlyChange() {
+                this.setData({
+                    readOnly: !this.data.readOnly
+                })
+            },
+            onEditorReady() {
+                const that = this
+                wx.createSelectorQuery().select('#editor').context(function (res) {
+                    console.log(res)
+                    that.editorCtx = res.context
+                    that.editorCtx.setContents({
+                        html:that.context
+                    })
+                }).exec();
+
+            },
+            format(e) {
+                let { name, value } = e.target.dataset
+                if (!name) return
+                // console.log('format', name, value)
+                this.editorCtx.format(name, value)
+            },
+            insertImage() {
+                const that = this
+                wx.chooseImage({
+                    count: 9,
+                    sizeType: ['original', 'compressed'],
+                    sourceType: ['album', 'camera'],
+                    success (res) {
+                        // tempFilePath可以作为img标签的src属性显示图片
+                        const tempFilePaths = res.tempFilePaths;
+                      for(let i=0;i<tempFilePaths.length;i++){
+                        wx.uploadFile({
+                          url: api.upload, //仅为示例，非真实的接口地址
+                          filePath: tempFilePaths[i],
+                          name: 'file',
+                          formData: {
+                            token:wx.getStorageSync('token'),
+                            type: that.type
+                          },
+                          success (res1){
+                            // const data = res.data
+                            let data = JSON.parse(res1.data);
+                            //do something
+                            that.editorCtx.insertImage({
+                              src: api.api + data.data,
+                              data: {
+                                id: '',
+                                role: ''
+                              },
+                              success: function () {
+                                console.log('insert image success')
+                              }
+                            })
+                            that.$apply();
+                          }
+                        })
+                      }
+
+
+                    }
+                })
+            },
+            insertVideo(){
+                const that = this
+                wx.chooseImage({
+                    count: 1,
+                    success: function () {
+                        that.editorCtx.insertVideo({
+                            src: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1543767268337&di=5a3bbfaeb30149b2afd33a3c7aaa4ead&imgtype=0&src=http%3A%2F%2Fimg02.tooopen.com%2Fimages%2F20151031%2Ftooopen_sy_147004931368.jpg',
+                            data: {
+                                id: 'abcd',
+                                role: 'god'
+                            },
+                            success: function () {
+                                console.log('insert image success')
+                            }
+                        })
+                    }
+                })
+            },
+            onEditorChange(e){
+              console.log(e,'html')
+                this.$emit('editorChange',e.detail.html);
+                this.$apply();
+            }
+        }
+    }
+</script>

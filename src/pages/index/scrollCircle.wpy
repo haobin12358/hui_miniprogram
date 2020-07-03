@@ -1,0 +1,1049 @@
+<style scoped lang="less" rel="stylesheet/less">
+  @import "../../styles/common";
+  .m-circle-box{
+    overflow: auto;
+    padding: 20rpx 30rpx;
+  }
+  .hidden,.none{display: none!important;}
+
+  .touchView{z-index: 200; width: 350rpx;position: absolute;top: 0;left:0;z-index:999;}
+
+  .edit_row{ position:relative;z-index:777; margin: 20rpx; background-color: #fff; height: 180px; box-sizing: border-box;    box-shadow: 0 30rpx 30rpx 0 rgba(0,0,0,0.12);
+  }
+
+
+  /*.edit_row_holder{ margin-top:82px;}*/
+
+  .moveable_row{ width: 100%; position: absolute;top: 0;left: 0;   z-index: 888;}
+  .moveable_row .edit_row{
+    /*box-shadow: 0 0 12px rgba(0,0,0,.2)*/
+
+  }
+  .moveable_row .edit_row_show{
+    box-shadow: 0 30rpx 30rpx 0 rgba(0,0,0,0.12);
+  }
+  .edit_row{
+    border-bottom: 1px solid @border-color;
+    padding: 0  ;
+    .m-scale{
+      transform: scale(0.9);
+    }
+    .m-one-circle-title{
+      .flex-row(space-between);
+      padding-bottom: 10rpx;
+      .m-circle-label{
+        display: inline-block;
+        padding: 0 10rpx;
+        background-color: @common-color;
+        font-size: 20rpx;
+      }
+    }
+    .m-info{
+      font-weight: 600;
+      line-height: 56rpx;
+    }
+    .m-recommend-icon{
+      display: inline-block;
+      width: 40rpx;
+      height: 40rpx;
+      margin-right: 20rpx;
+    }
+    .m-text{
+      line-height: 56rpx;
+      text-align: left;
+      .m-topic{
+        color: #006FCE;
+      }
+    }
+    .m-one-img{
+      display: block;
+      width: 690rpx;
+      height: 388rpx;
+      margin-bottom: 10rpx;
+    }
+    .m-img-box{
+      .flex-row(flex-start);
+      flex-wrap: wrap;
+      margin-top: 20rpx;
+      .m-img{
+        width: 200rpx;
+        height: 200rpx;
+        margin: 0 20rpx 20rpx 0;
+      }
+      video{
+        width: 690rpx;
+        height: 388rpx;
+        margin-bottom: 20rpx;
+      }
+    }
+    .m-loc-box{
+      .flex-row(flex-start);
+      font-size: 24rpx;
+      line-height: 33rpx;
+      .m-icon-loc{
+        display: inline-block;
+        width: 40rpx;
+        height: 40rpx;
+        margin-right: 10rpx;
+      }
+    }
+  }
+  .m-btn-box{
+    height: 40px;
+    padding:0 20rpx ;
+    .flex-row(space-between);
+    .m-btn{
+      display: block;
+      width: 120rpx;
+      height: 50rpx;
+      line-height: 50rpx;
+      text-align: center;
+      border-radius: 30rpx;
+      border: 1px solid @common-color;
+      color: @common-color;
+      margin-left: 20rpx;
+      &.active{
+        background-color: @common-color;
+        color: #000;
+      }
+    }
+  }
+
+</style>
+<template>
+  <view >
+    <!-- 页面card -->
+    <view class="m-btn-box">
+      <view >
+        <checkbox-group bindchange="checkChange" wx:if="{{show_edit}}">
+          <checkbox value="{{all_check}}" checked="{{all_check}}" color="#FFCE00" />全选
+        </checkbox-group>
+      </view>
+      <view class="m-flex-end" wx:if="{{!show_edit}}">
+        <span class="m-btn" @tap="showEdit">编辑</span>
+        <span class="m-btn active" @tap="saveTap">保存</span>
+      </view>
+      <view class="m-flex-end" wx:else>
+        <span class="m-btn" @tap="showEdit">确定</span>
+        <span class="m-btn active" @tap="deleteTap">删除</span>
+      </view>
+    </view>
+    <view style="position: relative;z-index:199;">
+      <view class="touchView" style="height:{{scrollPosition.scrollViewHeight}}px;" @longpress="longpressfuc"
+            @touchstart="draggleTouch"
+            @touchmove="draggleTouch" @tap="completedown" @touchend="draggleTouch">
+      </view>
+      <!-- 用于展示给用户的移动item -->
+      <movable-area class="moveable_row move_row {{movableViewPosition.className}}"
+                    style="height: {{scrollPosition.scrollViewHeight}}px;">
+        <movable-view style="height: {{scrollPosition.everyOptionCell}}px; width: 100%;"
+                      direction="vertical" x="{{movableViewPosition.x}}"  y="{{movableViewPosition.y}}"
+                      inertia="false" damping="9999"  friction="9999">
+          <view class="edit_row edit_row_show "  >
+            <view class="m-one-circle-title" >
+              <view class="m-flex-start"  >
+                <image src="{{img_url}}{{movableViewPosition.data.author.usheader}}" class="m-user-head"></image>
+                <span class="m-user-name" >{{item.movableViewPosition.data.usname}}</span>
+                <span class="m-user-label">{{item.movableViewPosition.data.usminilevel}}</span>
+              </view>
+              <view class="m-flex-end">
+                <!--                  <image src="{{img_src}}index/icon-add-look-active.png" class="m-recommend-icon" wx:if="{{!item.is_own && !item.followed}}" @tap.stop="follow({{index}})"></image>-->
+                <view class="m-circle-label">{{movableViewPosition.data.travelrecordtype_zh}}</view>
+                <checkbox value="{{movableViewPosition.data.trid}}" checked="{{movableViewPosition.data.checked}}" wx:if="{{show_edit}}" color="#FFCE00"/>
+              </view>
+            </view>
+            <view >
+              <!--      <view class="m-info">杭州-富阳</view>-->
+              <view class="m-text"  wx:if="{{movableViewPosition.data.trtype == 2 }}">
+                <view>{{movableViewPosition.data.text}}</view>
+                <view class="m-img-box">
+                  <image wx:for="{{movableViewPosition.data.image}}" wx:key="{{i}}" mode="aspectFill" wx:for-index="i" wx:for-item="key" src="{{key}}" class="m-img" wx:if="{{movableViewPosition.data.showtype == 'image'}}"  ></image>
+                  <video  wx:if="{{movableViewPosition.data.showtype == 'video'}}" src="{{movableViewPosition.data.video.url}}" poster="{{movableViewPosition.data.video.thumbnail}}"  controls></video>
+                </view>
+              </view>
+              <view class="m-text" wx:else >
+              <span class="m-topic">
+                  #{{movableViewPosition.data.trtitle}}#
+              </span>
+                <span wx:if="{{movableViewPosition.data.text}}">{{movableViewPosition.data.text}}</span>
+
+              </view>
+              <image src="{{movableViewPosition.data.picture}}" wx:if="{{movableViewPosition.data.picture}}" class="m-one-img" ></image>
+              <!--        <image src="{{item.picture}}" wx:if="{{item.picture && item.picture.indexOf('https:') > -1}}" class="m-one-img" @tap.stop="previewImage({{item.picture}})"></image>-->
+              <!--      <image src="" class="m-one-img" ></image>-->
+              <view class="m-info" wx:if="{{movableViewPosition.data.trproducts_str}}">推荐携带物品：{{movableViewPosition.data.trproducts_str}}</view>
+              <view class="m-info" wx:if="{{movableViewPosition.data.trbudget}}">预算：¥{{movableViewPosition.data.trbudget}}</view>
+              <view class="m-flex-between" >
+                <view class="m-loc-box" wx:if="{{movableViewPosition.data.trlocation}}">
+                  <image src="{{img_src}}common/icon-loc.png" class="m-icon-loc"></image>
+                  <span >{{movableViewPosition.data.trlocation}}</span>
+                </view>
+                <!--                  <view class="m-grey m-flex-end" wx:if="{{movableViewPosition.data.trtype != 2 }}" @tap="changeRoute({{movableViewPosition.data}})">-->
+                <!--                    <span>查看详情</span>-->
+                <!--                    <image src="{{img_src}}common/icon-more.png" class="m-icon-more"></image>-->
+                <!--                  </view>-->
+              </view>
+            </view>
+          </view>
+        </movable-view>
+      </movable-area>
+
+
+      <scroll-view class="edit_row_holder" scroll-y="{{scrollPosition.scrollY}}"
+                   style="height: {{scrollPosition.scrollViewHeight}}px;" @scroll="bindscroll"  @scrolltolower="lower">
+        <!-- catchtouchstart="draggleTouch" -->
+        <!-- 监测移动事件 -->
+
+        <!--      <view style="position: relative; ">-->
+
+        <!-- 用户信息 end -->
+        <checkbox-group bindchange="checkboxChange">
+          <block wx:for="{{optionsListData}}" wx:key="id">
+            <view class="edit_row  {{item.selectClass}}" data-index="{{index}}" bindtouchmove="handletouchmove" bindtouchstart="handletouchstart" bindtouchend="handletouchend" animation="{{animation_flag == index ? animationData :''}}">
+              <view class="m-scale">
+                <view class="m-one-circle-title">
+                  <view class="m-flex-start"  >
+                    <image src="{{img_url}}{{item.author.usheader}}" class="m-user-head"></image>
+                    <span class="m-user-name" >{{item.author.usname}}</span>
+                    <span class="m-user-label">{{item.author.usminilevel}}</span>
+                  </view>
+                  <view class="m-flex-end">
+                    <!--                  <image src="{{img_src}}index/icon-add-look-active.png" class="m-recommend-icon" wx:if="{{!item.is_own && !item.followed}}" @tap.stop="follow({{index}})"></image>-->
+                    <view class="m-circle-label">{{item.travelrecordtype_zh}}</view>
+                    <checkbox value="{{item.trid}}" checked="{{item.checked}}" wx:if="{{show_edit}}" color="#FFCE00"/>
+                  </view>
+                </view>
+                <view >
+                  <!--      <view class="m-info">杭州-富阳</view>-->
+                  <view class="m-text"  wx:if="{{item.trtype == 2 }}">
+                    <view>{{item.text}}</view>
+                    <view class="m-img-box">
+                      <image wx:for="{{item.image}}" wx:key="{{i}}" @tap.stop="previewImage({{key}})" mode="aspectFill" wx:for-index="i" wx:for-item="key" src="{{key}}" class="m-img" wx:if="{{item.showtype == 'image'}}"  ></image>
+                      <video  wx:if="{{item.showtype == 'video'}}" src="{{item.video.url}}" poster="{{item.video.thumbnail}}"  controls></video>
+                    </view>
+                  </view>
+                  <view class="m-text" wx:else >
+                <span class="m-topic">
+                    #{{item.trtitle}}#
+                </span>
+                    <span wx:if="{{item.text}}">{{item.text}}</span>
+
+                  </view>
+                  <image src="{{item.picture}}" @tap.stop="previewImage({{item.picture}})" wx:if="{{item.picture}}" class="m-one-img" ></image>
+                  <!--        <image src="{{item.picture}}" wx:if="{{item.picture && item.picture.indexOf('https:') > -1}}" class="m-one-img" @tap.stop="previewImage({{item.picture}})"></image>-->
+                  <!--      <image src="" class="m-one-img" ></image>-->
+                  <view class="m-info" wx:if="{{item.trproducts_str}}">推荐携带物品：{{item.trproducts_str}}</view>
+                  <view class="m-info" wx:if="{{item.trbudget}}">预算：¥{{item.trbudget}}</view>
+                  <view class="m-flex-between" >
+                    <view class="m-loc-box" wx:if="{{item.trlocation}}">
+                      <image src="{{img_src}}common/icon-loc.png" class="m-icon-loc"></image>
+                      <span >{{item.trlocation}}</span>
+                    </view>
+                    <!--                  <view class="m-grey m-flex-end" wx:if="{{item.trtype != 2 }}" @tap="changeRoute({{item}})">-->
+                    <!--                    <span>查看详情</span>-->
+                    <!--                    <image src="{{img_src}}common/icon-more.png" class="m-icon-more"></image>-->
+                    <!--                  </view>-->
+                  </view>
+                </view>
+              </view>
+
+
+            </view>
+          </block>
+        </checkbox-group>
+        <!--      </view>-->
+      </scroll-view>
+    </view>
+
+  </view>
+
+
+
+
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import api from '../../api/api';
+  import tip from '../../utils/tip';
+
+  export default class scrollCircle extends wepy.page {
+    config = {
+      navigationBarTitleText: '长按左边拖拽排序'
+    }
+    components = {
+
+    }
+    data = {
+      all_check:false,
+      show_edit:false,
+      img_src:api.img_src,
+      pageStatus:'',
+      optionsListData:[],
+      movableViewPosition:{
+        x:0,
+        y:0,
+        className:"none",
+        data:{
+          icon_type:1,
+          is_complete:true
+        }
+      },
+      scrollPosition:{
+        everyOptionCell:188,
+        top:0,
+        scrollTop:0,
+        scrollY:true,
+        scrollViewHeight:1334,
+        scrollViewWidth:375,
+        windowViewHeight:1334,
+      },
+      selectItemInfo:{
+        title:"",
+        address:"",
+        desc:"",
+        selectIndex: -1,
+        selectPosition:0,
+      },
+      flag:0,
+      show_assistant:true,
+      animation_flag:'',
+      page:0,
+      has_next:true,
+      isShow: false,
+      move_type:'',
+      user:{
+        headimgurl:'https://avatars2.githubusercontent.com/u/24517605?s=460&v=4',
+        expected_birth_week:''
+      },
+      navigationBarTitle:'',
+      // plid:'e9d45eee-b80a-11e9-82fc-0242ac110002',
+      plid:'',
+      page_info:{
+        page_num: 1,
+        page_size: 10
+      },
+      total_count:0,
+      img_url:api.api,
+      select_box:[],
+      all_data:null
+    }
+
+    onLoad(options) {
+      var systemInfo= wx.getSystemInfoSync();
+      // 开始加载页面
+      var scrollViewHeight = systemInfo.windowHeight;
+      var scrollViewWidth = systemInfo.windowWidth;
+      this.scrollPosition.scrollViewWidth = scrollViewWidth;
+        this.scrollPosition.scrollViewHeight = scrollViewHeight-40;
+        this.scrollPosition.windowViewHeight = systemInfo.windowHeight;
+
+      this.img_path = '';
+
+      let that = this;
+      that.page = 0;
+      this.$apply();
+      if(options.data){
+        this.all_data = JSON.parse(decodeURIComponent(options.data));
+        this.$apply();
+      }
+      if(options.plid){
+        this.plid = options.plid;
+        this.$apply();
+      }
+      that.getData();
+      that.pageInit();
+
+    }
+    getData(){
+      var that=this;
+      tip.loading();
+      let optionsList = [].concat(that.optionsListData);
+      wepy.request({
+        url: api.get_team_travelrecord +'?token='+wx.getStorageSync('token') ,
+        data: {
+          plid: that.plid,
+          page_num:that.page_info.page_num,
+          page_size: that.page_info.page_size,
+        },
+        header: {
+          'content-type': 'application/json' // 默认值
+        }
+      }).then(res => {
+        if(res.data.status == 200){
+          let data = res.data.data;
+          if(that.page_info.page_num >1){
+            optionsList = optionsList.concat(data);
+          }else{
+            optionsList = data;
+          }
+          for(let i=0;i<optionsList.length;i++){
+            if(optionsList[i].picture){
+              if(optionsList[i].picture.indexOf('https://') < 0){
+                optionsList[i].picture = api.api + optionsList[i].picture;
+              }
+            }
+            if(optionsList[i].trtype == 2){
+              if(optionsList[i].showtype == 'image'){
+                for(let a =0;a<optionsList[i].image.length;a++){
+                  if(optionsList[i].image[a].indexOf('https://') < 0){
+                    optionsList[i].image[a] = api.api +optionsList[i].image[a]
+                  }
+                }
+              }
+              if(optionsList[i].showtype == 'video'){
+                if(optionsList[i].video.url.indexOf('https://') < 0){
+                  optionsList[i].video.url = api.api + optionsList[i].video.url;
+                }
+                if(optionsList[i].video.thumbnail.indexOf('https://') < 0){
+                  optionsList[i].video.thumbnail = api.api + optionsList[i].video.thumbnail;
+                }
+              }
+            }
+            optionsList[i].id = i;
+            optionsList[i].checked = false;
+          }
+          that.total_count = res.data.total_count;
+          that.pageStatus = 'ok';
+          that.optionsListData = optionsList;
+
+          that.has_next = false;
+          that.move_type = '';
+          that.$apply();
+        }
+      })
+
+    }
+    pageInit(){
+      // 优先使用全局变量中位置信息，没有则重新请求位置信息
+      var that =this;
+    }
+    scrollTouchStart(event) {
+      var that=this;
+      console.log('开始');
+      var firstTouchPosition = {
+        x:event.changedTouches[0].pageX,
+        y:event.changedTouches[0].pageY,
+      }
+      console.log("firstTouchPosition:",firstTouchPosition);
+      var domData = that.getPositionDomByXY(firstTouchPosition);
+      // domData.show_delet = false;
+
+      // 排序时禁止已完成card移动------start--------
+      if(that.data.move_type != 'reset_status' && domData.is_complete){
+        that.movableViewPosition={
+          x:0,
+          y:0,
+          className:"none",
+          data:{
+            icon_type:1,
+            is_complete:true
+          }
+        }
+        that.$apply();
+        return false;
+      }
+      // 排序时禁止已完成card移动------end--------
+
+      // console.log("domData:",domData);
+
+      //movable-area滑块位置处理
+      var movableX = 0;
+      var movableY = firstTouchPosition.y-that.data.scrollPosition.top-that.data.scrollPosition.everyOptionCell/2;
+
+      that.movableViewPosition={
+        x:movableX,
+        y:movableY,
+        className:"none",
+        data:domData
+      }
+      that.$apply();
+      setTimeout(function(){
+        that.movableViewPosition = {
+          x:movableX,
+          y:movableY,
+          className:"",
+          data:domData
+        }
+        that.$apply();
+      },10)
+      var id = domData.id;
+      var secInfo = that.getOptionInfo(id);
+      secInfo.selectPosition =  event.changedTouches[0].clientY;
+      secInfo.selectClass = "dragSelected";
+
+      that.data.optionsListData[secInfo.selectIndex].selectClass = "dragSelected";
+
+      var optionsListData = that.data.optionsListData;
+
+      that.scrollPosition.scrollY=false;
+      that.selectItemInfo =secInfo;
+      that.optionsListData = optionsListData;
+      that.scrollPosition.selectIndex =secInfo.selectIndex
+      that.$apply();
+    }
+    scrollTouchMove(event) {//频繁setdata导致性能问题，页面拖动卡顿
+      console.log('移动',this.data);
+      var that=this;
+      var selectItemInfo = that.data.selectItemInfo;
+      var selectPosition = selectItemInfo.selectPosition;
+      var moveDistance   = event.changedTouches[0].clientY;
+      var everyOptionCell = that.data.scrollPosition.everyOptionCell;
+      var optionsListData = that.data.optionsListData;
+      var selectIndex = selectItemInfo.selectIndex;
+      // console.log("event.changedTouches:",event.changedTouches);
+      //movable-area滑块位置处理
+      var movableX = 0;
+      var movableY = event.changedTouches[0].pageY-that.data.scrollPosition.top-that.data.scrollPosition.everyOptionCell/2;
+
+
+      that.movableViewPosition = {
+        x:movableX,
+        y:movableY,
+        className:"",
+        data:that.data.movableViewPosition.data
+      }
+      that.$apply();
+      console.log(optionsListData,selectIndex,selectItemInfo)
+      if(moveDistance - selectPosition > 0 && selectIndex < optionsListData.length - 1){
+        if (optionsListData[selectIndex].id == selectItemInfo.id) {
+          optionsListData.splice(selectIndex, 1);
+          optionsListData.splice(++selectIndex, 0, selectItemInfo);
+          selectPosition += everyOptionCell;
+        }
+      }
+
+      if (moveDistance - selectPosition < 0 && selectIndex > 0) {
+        if (optionsListData[selectIndex].id == selectItemInfo.id) {
+          optionsListData.splice(selectIndex, 1);
+          optionsListData.splice(--selectIndex, 0, selectItemInfo);
+          selectPosition -= everyOptionCell;
+        }
+      }
+
+      that.selectItemInfo.selectPosition= selectPosition;
+      that.selectItemInfo.selectIndex = selectIndex;
+      that.optionsListData = optionsListData;
+      that.$apply();
+    }
+    scrollTouchEnd(event) {
+      console.log('结束');
+      var that=this;
+      var optionsListData = that.optionsDataTranlate(that.data.optionsListData,"");
+
+      that.optionsListData = optionsListData;
+      that.scrollPosition.scrollY = true;
+      that.movableViewPosition.className ="none";
+      that.movableViewPosition.is_complete = true
+      var movableViewPosition={
+        x:0,
+        y:0,
+        className:"none",
+        data:{
+          icon_type:1,
+          is_complete:true
+        }
+      };
+
+      if(that.data.move_type != 'reset_status'){
+        // console.log('排序');
+        that.movableViewPosition =movableViewPosition
+
+        var selectItemInfo = that.data.selectItemInfo;
+        for(let i=0;i<optionsListData.length;i++){
+          if(selectItemInfo.id == optionsListData[i].id){
+            if(optionsListData[i].sortNum == i){//原有顺序=当前顺序，未改变位置
+              return false;
+            }
+            var relation_id='';
+            if(i == 0){//移动后处于首位，上移
+              relation_id=optionsListData[i+1].id;
+              that.updateList(selectItemInfo.id,'reset_weight',relation_id);
+              return false;
+            }
+            if(i == (optionsListData.length - 1) ){//移动后处于末尾位，下移
+              relation_id=optionsListData[i-1].id;
+              that.updateList(selectItemInfo.id,'reset_weight',relation_id);
+              return false;
+            }
+
+            var pre_num=optionsListData[i-1].sortNum;//上一条数据初始顺序
+            var curr_num=optionsListData[i].sortNum;//移动数据初始顺序
+            if(pre_num > curr_num){ //下移
+              relation_id=optionsListData[i-1].id;
+              that.updateList(selectItemInfo.id,'reset_weight',relation_id);
+            }else{//上移
+              relation_id=optionsListData[i+1].id;
+              that.updateList(selectItemInfo.id,'reset_weight',relation_id);
+            }
+          }
+        }
+        that.$apply();
+      }else{
+        that.movableViewPosition = movableViewPosition;
+
+        that.$apply();
+      }
+
+      // console.log(that.data);
+    }
+    getOptionInfo(id) {
+      for(var i=0,j=this.data.optionsListData.length;i<j;i++){
+        var optionData= this.data.optionsListData[i];
+        if(optionData.id == id){
+          optionData.selectIndex = i;
+          return optionData;
+        }
+      }
+      return {};
+    }
+    getPositionDomByXY(potions) {
+      var y = potions.y-this.data.scrollPosition.top+this.data.scrollPosition.scrollTop - 40;
+      var optionsListData = this.data.optionsListData;
+      var everyOptionCell = this.data.scrollPosition.everyOptionCell;
+      for(var i=0,j=optionsListData.length;i<j;i++){
+        if(y>=i*everyOptionCell&&y<(i+1)*everyOptionCell){
+          return optionsListData[i];
+        }
+      }
+      return optionsListData[0];
+    }
+    optionsDataTranlate(optionsList,selectClass) {
+      for(var i=0,j=optionsList.length;i<j;i++){
+        optionsList[i].selectClass = selectClass;
+      }
+      return optionsList;
+    }
+    updateList(id,operate,relation_id){
+      // wx.showLoading({
+      //   mask:true
+      // });
+      var that=this;
+      var ajaxData={};
+
+    }
+  onShow(){
+    var that=this;
+    // if(app.globalData.refresh_list){
+    //   app.globalData.refresh_list = false;
+    //   that.setData({
+    //     page:0
+    //   })
+    //   that.getData();
+    // }
+    // app.globalData.refresh_list = false;
+
+  }
+    methods = {
+      //删除
+      deleteTap(){
+        let that =this;
+        wx.showModal({
+          title: '删除',
+          content: '确定删除这些内容吗？',
+          success (res) {
+            if (res.confirm) {
+              let arr =[];
+              for(let i=0;i<that.optionsListData.length;i++){
+                if(!that.optionsListData[i].checked){
+                  arr.push(that.optionsListData[i]);
+                }
+              }
+              that.optionsListData = [].concat(arr);
+              // that.show_edit = false;
+              that.$apply();
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
+          }
+        })
+      },
+      //保存
+      saveTap(){
+        let that = this;
+        that.all_data.list_data = that.optionsListData;
+        // that.all_data.cost_list = that.cost_list;
+        wx.redirectTo({
+          url: '/pages/index/shareEdit?data=' + encodeURIComponent(JSON.stringify(that.all_data))
+        });
+      },
+      //每个多选框
+      checkboxChange(e){
+
+        for(let i=0;i<this.optionsListData.length;i++){
+          for(let j=0;j<e.detail.value.length;j++){
+            this.optionsListData[i].checked = false;
+            if(this.optionsListData[i].trid == e.detail.value[j]){
+              this.optionsListData[i].checked = true;
+              break;
+            }
+          }
+        }
+        if(e.detail.value.length == this.optionsListData.length){
+          this.all_check =  true;
+        }else{
+          this.all_check =  false;
+        }
+        this.$apply();
+      },
+      //全选
+      checkChange(e){
+
+        for(let i=0;i<this.optionsListData.length;i++){
+          if(e.detail.value.length > 0){
+            this.optionsListData[i].checked = true;
+          }else{
+            this.optionsListData[i].checked = false;
+          }
+        }
+        this.$apply();
+      },
+      //编辑确定
+      showEdit(){
+        this.show_edit = !this.show_edit;
+        this.$apply();
+      },
+      changeRoute(item){
+        if(item.trtype != 2){
+          wx.navigateTo({
+            url: '/pages/travel/circleDetail?trid='+item.trid
+          });
+        }
+      },
+      toOtherMain(item){
+        if(!item.is_own && item.author.usid){
+          wx.navigateTo({
+            url: '/pages/personal/mainIndex?usid='+item.author.usid
+          });
+        }
+
+      },
+      //预览图片
+      previewImage(item){
+
+        let that = this;
+        let img_list = [];
+        if(this.optionsListData.length > 0){
+          for(let i=0;i<this.optionsListData.length;i++){
+            if(this.optionsListData[i].picture){
+              img_list.push(this.optionsListData[i].picture);
+            }
+            if(this.optionsListData[i].image){
+              img_list = img_list.concat(this.optionsListData[i].image);
+            }
+          }
+          this.$apply();
+        }
+        wx.previewImage({
+          current: item, // 当前显示图片的http链接
+          urls: img_list // 需要预览的图片http链接列表
+        })
+      },
+
+      handletouchmove: function(event) {
+        // console.log(event)
+        var that=this;
+        if (that.data.flag!== 0){
+          return
+        }
+        let currentX = event.touches[0].pageX;
+        let currentY = event.touches[0].pageY;
+        let tx = currentX - that.data.lastX;
+        let ty = currentY - that.data.lastY;
+        // let text = "";
+        //左右方向滑动
+        if (Math.abs(tx) > Math.abs(ty)) {
+          let scrollPosition=that.data.scrollPosition;
+          scrollPosition.scrollY = false;
+          that.setData({
+            scrollPosition:scrollPosition
+          })
+          if (tx < -80 && (ty <= 50 && ty >= -50)) {
+            // text = "向左滑动";
+            that.data.flag= 1;
+            if(that.data.swiper_index != undefined){
+              let index = that.data.swiper_index;
+              let optionsListData = that.data.optionsListData;
+              // for(let i=0;i<optionsListData.length;i++){
+              //   optionsListData[i].show_delet=false;
+              // }
+              // optionsListData[index].show_delet=true;
+              that.optionsListData = optionsListData
+            }
+            let scrollPosition=that.data.scrollPosition;
+            scrollPosition.scrollY = true;
+            that.scrollPosition = scrollPosition
+            that.$apply();
+          }
+          else if (tx > 80 && (ty <= 50 && ty >= -50)) {
+            // text = "向右滑动";
+            that.data.flag= 2;
+            if(that.data.swiper_index != undefined){
+              let index = that.data.swiper_index;
+              let optionsListData = that.data.optionsListData;
+              // optionsListData[index].show_delet=false;
+              that.optionsListData = optionsListData
+              that.$apply();
+            }
+            let scrollPosition=that.data.scrollPosition;
+            scrollPosition.scrollY = true;
+            that.scrollPosition = scrollPosition
+            that.$apply();
+          }
+        }else{
+          let scrollPosition=that.data.scrollPosition;
+          scrollPosition.scrollY = true;
+          that.scrollPosition = scrollPosition
+          that.$apply();
+        }
+
+        //将当前坐标进行保存以进行下一次计算
+        // this.data.lastX = currentX;
+        // this.data.lastY = currentY;
+        // console.log(text);
+      },
+
+      handletouchstart:function(event) {
+        // console.log(event)
+        var that=this;
+        that.data.lastX = event.touches[0].pageX;
+        that.data.lastY = event.touches[0].pageY;
+        if(event.currentTarget.dataset.index != undefined){
+          that.swiper_index = event.currentTarget.dataset.index
+          that.$apply();
+        }
+      },
+      fadeoutBox:function(e){
+        var that=this,
+          index=e.currentTarget.dataset.index;
+        let optionsListData = that.data.optionsListData;
+        // optionsListData[index].show_delet=false;
+        that.optionsListData =optionsListData
+        that.$apply();
+      },
+      handletouchend:function(event) {
+        var that=this;
+        that.data.flag= 0 ;
+        // console.log('结束滑动');
+        let scrollPosition=that.data.scrollPosition;
+        scrollPosition.scrollY = true;
+        that.scrollPosition = scrollPosition;
+        that.$apply();
+      },
+      toggleAssistant:function(){
+        var that=this;
+        that.setData({
+          show_assistant:!that.data.show_assistant
+        })
+      },
+      completedown:function(e){
+        var that=this;
+        var flag=e.currentTarget.dataset.flag;
+        var id=e.currentTarget.dataset.id;
+        that.data.move_type = 'reset_status';
+        if(that.data.animation_flag != ''){//阻止重复点击
+          return false;
+        }
+        var optionsListData=that.data.optionsListData;
+        var move_num=parseInt(optionsListData.length) - parseInt(flag) -1;
+        var scroll_num=0;
+        if(move_num >= 3){
+          scroll_num=482;
+        }else{
+          scroll_num=e.changedTouches[0].clientY + 135*move_num;
+        }
+
+        that.animation_flag = flag;
+        that.$apply();
+        that.scrollTouchStart(e);
+        // console.log(e);
+        // setTimeout(function(){
+        var point_move=setInterval(function(){
+          if(e.changedTouches[0].clientY <= scroll_num){
+            e.changedTouches[0].clientY+=30;
+            e.changedTouches[0].pageY+=30;
+            that.scrollTouchMove(e);
+          }else{
+            clearInterval(point_move);
+            that.animation_flag = '';
+            that.$apply();
+            that.scrollTouchEnd(e);
+
+            var n=parseInt(optionsListData.length -1);
+            var relation_id = optionsListData[n].id;
+            that.updateList(id,'reset_status',relation_id);
+            // console.log('end');
+            return false;
+          }
+        },10)
+        // },100)
+
+
+      },
+      completeup:function(e){
+        var that=this;
+        var flag=e.currentTarget.dataset.flag;
+        var id=e.currentTarget.dataset.id;
+        that.data.move_type = 'reset_status';
+        if(that.data.animation_flag != ''){//阻止重复点击
+          return false;
+        }
+        var optionsListData=that.data.optionsListData;
+        var move_num=parseInt(flag);
+        var scroll_num=0;
+        if(move_num >= 3){
+          scroll_num=0;
+        }else{
+          scroll_num=e.changedTouches[0].clientY - 135*move_num;
+        }
+
+        that.setData({
+          animation_flag:flag
+        })
+        that.scrollTouchStart(e);
+        // console.log(e);
+        // setTimeout(function(){
+        var point_move=setInterval(function(){
+          if(e.changedTouches[0].clientY >= scroll_num){
+            e.changedTouches[0].clientY-=30;
+            e.changedTouches[0].pageY-=30;
+            that.scrollTouchMove(e);
+          }else{
+            clearInterval(point_move);
+            that.animation_flag =''
+            that.scrollTouchEnd(e);
+
+            var relation_id = optionsListData[0].id;
+            that.updateList(id,'reset_status',relation_id);
+            // console.log('end');
+            return false;
+          }
+        },10)
+        // },100)
+      },
+      deletItem:function(e){
+        var that=this;
+        var id=e.currentTarget.dataset.id;
+        that.data.deletItem_id = id;
+        that.$apply();
+        that.showdialog();
+      },
+      confirmEvent:function(){
+        var that=this;
+        that.hidedialog();
+        that.updateList(that.data.deletItem_id,'disable');
+      },
+      preventD:function(){
+
+      },
+      showdialog:function(){
+        var that=this;
+        that.isShow = true;
+        that.$apply();
+      },
+      hidedialog:function(){
+        var that=this;
+        that.isShow =false;
+        that.$apply();
+      },
+      goUrl:function(e){
+        var that=this;
+        var url=e.currentTarget.dataset.url;
+        var id=e.currentTarget.dataset.id;
+        var index=e.currentTarget.dataset.index;
+        var optionsListData=that.data.optionsListData;
+        var status=parseInt(e.currentTarget.dataset.status);
+
+        if(status == 0){//已完成card，不支持跳转
+          return false;
+        }else{
+          if(url && url != null){
+            if(optionsListData[index].is_extend && !optionsListData[index].readed){
+              wx.request({
+                url: api.domain + '/v1/user_todo/'+id+'/readed/',
+                method: 'GET',
+                header: {
+                  Authorization: 'Bearer ' + app.globalData.jwt_token
+                },
+                success: res => {
+                  // console.log(res);
+                  wx.navigateTo({ url: url+'&id='+id});
+                }
+              })
+            }else{
+              wx.navigateTo({ url: url+'&id='+id});
+            }
+
+          }
+        }
+      },
+      htouchmove:function(e){
+        // console.log(e);
+      },
+      longpressfuc:function(e){
+        console.log('pngpress')
+        var movableViewPosition={
+          x:0,
+          y:0,
+          className:"none",
+          data:{
+            icon_type:1,
+            is_complete:true
+          }
+        };
+        this.movableViewPosition = movableViewPosition;
+        this.$apply();
+
+        this.scrollTouchStart(e);
+
+      },
+      bindscroll:function (event) {
+        var scrollTop = event.detail.scrollTop;
+        this.scrollPosition.scrollTop = scrollTop;
+        // this.movableViewPosition.y = scrollTop;
+        if(scrollTop >= 61){
+          if(this.data.navigationBarTitle != '长按左边拖拽排序'){
+            wx.setNavigationBarTitle({
+              title: '长按左边拖拽排序'
+            })
+            this.navigationBarTitle = '长按左边拖拽排序'
+
+          }
+
+        }else{
+          if(this.data.navigationBarTitle != ''){
+            wx.setNavigationBarTitle({
+              title: ''
+            })
+            this.navigationBarTitle=''
+          }
+        }
+        this.$apply();
+      },
+
+      draggleTouch:function (event) {
+        console.log(event)
+        var touchType = event.type;
+        switch(touchType){
+          case "touchstart":
+            this.scrollTouchStart(event);
+            break;
+          case "touchmove":
+            this.scrollTouchMove(event);
+            break;
+          case "touchend":
+            this.scrollTouchEnd(event);
+            break;
+        }
+      },
+
+      lower(){
+        if(this.total_count > this.optionsListData.length) {
+          this.page_info.page_num += 1;
+          this.$apply();
+          this.getData();
+        }
+      },
+    }
+  }
+</script>

@@ -1,0 +1,208 @@
+@common-color:#FFCE00;
+@score-grey:#eee;
+@grey-color:#C1C1C1;
+@border-color:#F2F2F2;
+@main-font-color: #5D677D;
+@tab-active-color: #6698FF;
+
+input,textarea{
+    font-size: 28rpx;
+    color: #000;
+}
+.flex-col(@x){
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: @x;
+}
+.flex-row(@x){
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: @x;
+}
+.flex(@row,@x,@y){
+    display: flex;
+    flex-direction: @row;
+    align-items: @y;
+    justify-content: @x;
+}
+.m-flex-end{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+.m-flex-start{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+.m-flex-center{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.m-flex-between{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.m-red{
+    color: #D8000D;
+}
+.m-border-back{
+    position: relative;
+}
+.m-border-back:before{
+    position: absolute;
+    content: '';
+    width: 100%;
+    height: 50%;
+    background-color: @common-color;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+    color: #000;
+}
+
+.m-icon-more{
+    display: inline-block;
+    width: 17rpx;
+    height: 30rpx;
+    margin-left: 10rpx;
+}
+.m-icon-more-active{
+    display: inline-block;
+    width: 17rpx;
+    height: 30rpx;
+    margin-left: 10rpx;
+}
+.m-icon-down{
+    display: inline-block;
+    width: 30rpx;
+    height: 17rpx;
+    margin-left: 10rpx;
+}
+.m-down-solid{
+    display: inline-block;
+    width: 22rpx;
+    height: 22rpx;
+}
+.m-common{
+    color: @common-color;
+}
+.m-grey{
+    color: #C1C1C1;
+}
+
+//用户头像，名称，身份
+.m-user-head{
+    display: inline-block;
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+}
+.m-user-name{
+    font-weight: 600;
+    margin: 0 20rpx;
+}
+.m-user-label{
+    padding: 0 10rpx;
+    border: 1px solid @common-color;
+    color: @common-color;
+    font-size: 20rpx;
+}
+
+
+//底部保存按钮
+
+.m-foot-btn.m-one{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 750rpx;
+    height: 98rpx;
+    line-height: 98rpx;
+    background-color: @common-color;
+    font-size: 30rpx;
+    font-weight: 500;
+    text-align: center;
+    z-index: 100;
+    &.cancel{
+        background-color: #D3D3D3;
+        color: #ADADAD;
+    }
+}
+.m-foot-btn.m-two{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 750rpx;
+    height: 104rpx;
+    line-height: 104rpx;
+    background-color: #fff;
+    font-size: 30rpx;
+    font-weight: 500;
+    text-align: center;
+    z-index: 100;
+    .flex-row(center);
+    .m-btn{
+        width: 372rpx;
+        height: 98rpx;
+        line-height: 98rpx;
+        border: 1px solid @common-color;
+        //color: @common-color;
+        &.active{
+            background-color: @common-color;
+            color: #000;
+        }
+        &.cancel{
+            background-color: #D3D3D3;
+            color: #ADADAD;
+            border-color: #D3D3D3;
+        }
+    }
+
+}
+
+//修改默认组件的大小
+radio {
+    transform:scale(0.7);
+}
+checkbox {
+    transform:scale(0.7);
+}
+switch {
+    transform:scale(0.7);
+}
+.m-no-data{
+    text-align: center;
+    color: @grey-color;
+    padding: 20rpx;
+}
+
+.m-share-btn{
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    line-height: inherit;
+}
+button::after {
+    border: none
+}
+
+.m-alert-text{
+  padding: 15rpx 30rpx;
+  background-color: @common-color;
+  .flex-row(space-between);
+  font-size: 24rpx;
+  .m-alert-btn{
+    display: inline-block;
+    padding: 0 24rpx;
+    border: 1px solid #000;
+  }
+}

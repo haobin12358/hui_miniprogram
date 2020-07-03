@@ -1,0 +1,473 @@
+<style scoped lang="less" rel="stylesheet/less">
+    @import "../../styles/common";
+.m-enterTeam{
+    .m-notice{
+        border-bottom: 10rpx solid #F4F4F4;
+    }
+    .m-bd-bottom{
+        padding: 20rpx 30rpx;
+        border-bottom: 1px solid @border-color;
+    }
+    .m-map-box{
+        .m-map{
+            width: 750rpx;
+            height: 563rpx;
+        }
+    }
+    .m-circle-box{
+        .m-border-back{
+            font-size: 32rpx;
+            font-weight: 500;
+        }
+        .m-edit-btn{
+          display: block;
+          width: 150rpx;
+          height: 50rpx;
+          line-height: 50rpx;
+          border-radius: 30rpx;
+          background-color: @common-color;
+          text-align: center;
+        }
+
+    }
+    .m-image-box{
+      .flex-row(flex-start);
+      flex-wrap: wrap;
+      padding: 40rpx 0 10rpx;
+      box-sizing: border-box;
+      width: 100%;
+      max-height: 315rpx;
+      overflow: hidden;
+      .m-one-image{
+        position: relative;
+        width: 135rpx;
+        height: 145rpx;
+        margin-right: 4rpx;
+        margin-bottom: 4rpx;
+        &:nth-child(5n){
+          margin-right: 0;
+        }
+        image{
+          width: 135rpx;
+          height: 135rpx;
+          /*background-color: #0BB20C;*/
+        }
+        .m-icon-play{
+          width: 80rpx;
+          height: 80rpx;
+          position: absolute;
+          top:0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          margin: auto;
+        }
+        .m-image-more{
+          position: absolute;
+          top:0;
+          left:0;
+          width: 135rpx;
+          height: 135rpx;
+          background-color: rgba(0,0,0,0.2);
+          .flex-col(center);
+          color: #fff;
+          font-size: 28rpx;
+          font-weight: 500;
+          line-height: 40rpx;
+        }
+      }
+    }
+  .m-modal{
+    position: fixed;
+    top:0;
+    left: 0;
+    right: 0;
+    bottom:0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.16);
+    .flex-row(center);
+    &.m-video{
+      background-color: rgba(0,0,0,1);
+      color: #c1c1c1;
+      display: block;
+      .m-btn{
+        display: block;
+        padding: 20rpx;
+      }
+    }
+    .m-edit-icon-box{
+      width: 414rpx;
+      padding: 20rpx;
+      background-color: #fff;
+      .flex-row(space-around);
+      .m-one-icon{
+        width: 110rpx;
+        text-align: center;
+        .m-edit-icon{
+          width: 110rpx;
+          height: 110rpx;
+        }
+      }
+    }
+    video{
+      width: 750rpx;
+      height: 90vh;
+    }
+  }
+}
+</style>
+<template>
+    <view class="m-enterTeam" wx:if="{{img_src}}">
+      <login wx:if="{{no_login}}"></login>
+      <scroll-view scroll-y style="height: 100vh;" bindscrolltolower="lower"  >
+        <view class="m-notice" >
+            <view class="m-bd-bottom m-flex-between">
+                <span class="m-grey">群公告</span>
+<!--                <view class="m-grey m-flex-end">-->
+<!--                    <span>查看更多</span>-->
+<!--                    <image src="{{img_src}}common/icon-more.png" class="m-icon-more"></image>-->
+<!--                </view>-->
+            </view>
+            <view class="m-bd-bottom" wx:if="{{notice_list.nocontent}}">
+                <view>
+                    {{notice_list.nocontent}}
+                </view>
+                <view class="m-grey">
+                    {{notice_list.createtime}}
+                </view>
+            </view>
+          <view class="m-no-data" wx:if="{{!notice_list.nocontent}}">暂无公告</view>
+
+        </view>
+        <view class="m-map-box">
+            <view class="m-grey m-bd-bottom m-flex-between">
+              <view>成员位置</view>
+              <view class="m-grey m-flex-end" wx:if="{{!show_map}}" @tap="changeTap('show_map')">
+                  <span>查看更多</span>
+                  <image src="{{img_src}}common/icon-more.png" class="m-icon-more"></image>
+              </view>
+              <view class="m-grey m-flex-end" wx:if="{{show_map}}" @tap="changeTap('show_map')">
+                <span>收起</span>
+                <image src="{{img_src}}common/icon-more.png" class="m-icon-more"></image>
+              </view>
+            </view>
+            <view class="m-map" wx:if="{{show_map}}">
+                <map id="map" longitude="{{longitude}}" latitude="{{latitude}}" include-points="{{all_points}}" scale="14" markers="{{markers}}" bindmarkertap="markertap"   show-location style="width: 100%; height: 560rpx;"></map>
+            </view>
+        </view>
+
+        <view class="m-circle-box">
+            <view class="m-bd-bottom">
+              <view class="m-flex-between">
+                <span class="m-border-back">团队广场</span>
+                <view class="m-edit-btn" @tap="changeModal('show_edit',true)">发布</view>
+              </view>
+              <view class="m-image-box" wx:if="{{photo_album.length>0 }}">
+                <view class="m-one-image" wx:for="{{photo_album}}" wx:key="{{index}}">
+                  <image src="{{item.url}}" @tap="previewImage({{item.url}})" wx:if="{{item.type == 'image'}}"></image>
+                  <image src="{{item.thumbnail}}" wx:if="{{item.type == 'video'}}" @tap="playVideo({{item}})"></image>
+                  <image src="{{img_src}}common/icon-play.png" wx:if="{{item.type == 'video'}}" @tap="playVideo({{item}})" class="m-icon-play"></image>
+                  <view class="m-image-more" wx:if="{{ (photo_album.length-1 > 10 && index == 9 )|| index == photo_album.length-1 }}" @tap.stop="changeRoute('/pages/index/imageList')">
+                    <view>{{photo_album.length}}</view>
+                    <view>...</view>
+                  </view>
+                </view>
+              </view>
+
+            </view>
+
+          <view class="m-no-data" wx:if="{{list_data.length == 0}}">暂无动态</view>
+            <circle :list.sync="list_data"></circle>
+        </view>
+      </scroll-view>
+      <view class="m-modal" wx:if="{{show_edit}}" @tap="changeModal('show_edit',false)">
+        <view class="m-edit-icon-box">
+          <view class="m-one-icon" @tap.stop="changeRoute('/pages/index/editTravelNote')">
+            <image src="{{img_src}}index/edit-travel.png" class="m-edit-icon"></image>
+            <view>游记</view>
+          </view>
+          <view class="m-one-icon" @tap.stop="changeRoute('/pages/index/editEssay')">
+            <image src="{{img_src}}index/edit-essay.png" class="m-edit-icon"></image>
+            <view>随笔</view>
+          </view>
+          <view class="m-one-icon" @tap.stop="changeRoute('/pages/index/editStrategy')">
+            <image src="{{img_src}}index/edit-strategy.png"  class="m-edit-icon"></image>
+            <view>攻略</view>
+          </view>
+
+        </view>
+      </view>
+      <view class="m-modal m-video" wx:if="{{show_video}}">
+        <view class="m-flex-end">
+          <span class="m-btn" @tap="changeModal('show_video',false)">关闭</span>
+        </view>
+        <video src="{{video_url}}" autoplay="true"></video>
+      </view>
+    </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import circle from '../../components/common/circle';
+    import api from '../../api/api';
+    import tip from '../../utils/tip';
+    import Login from '../../components/common/noLogin';
+    export default class enterTeam extends wepy.page {
+        config = {
+            navigationBarTitleText: '进入团队',
+            enablePullDownRefresh: true
+        }
+        components = {circle,login:Login}
+        data = {
+          no_login:true,
+          img_src:null,
+          longitude:'',
+          latitude:'',
+            markers: [{
+                iconPath: "/images/common/icon-loc-mark.png",
+                id: 0,
+                latitude: 23.099994,
+                longitude: 113.324520,
+                width: 50,
+                height: 50
+            }],
+            // controls: [{
+            //     id: 1,
+            //     iconPath: '/images/common/icon-loc-mark.png',
+            //     position: {
+            //         left: 0,
+            //         top: 300 - 50,
+            //         width: 50,
+            //         height: 50
+            //     },
+            //     clickable: true
+            // }],
+          notice_list:null,
+          all_points:[],
+          list_data:[],
+          page_info:{
+            page_num: 1,
+            page_size: 10
+          },
+          total_count:0,
+          plid:'',
+          show_map:false,
+          show_edit:false,
+          photo_album:[],
+          video_url:'',
+          show_video:false
+        }
+      // getId(){
+      //   let that = this;
+      //   tip.loading();
+      //   wepy.request({
+      //     url: api.get_current_play + '?token=' +wx.getStorageSync('token'),
+      //     method:"get",
+      //     data:{}
+      //   }).then(resule => {
+      //     that.no_login = false;
+      //     that.$apply();
+      //     if(resule.data.status == 200){
+      //       that.plid = resule.data.data.plid;
+      //       that.$apply();
+      //       that.getNotice();
+      //       that.getLoc();
+      //       that.getData();
+      //       that.getPhoto();
+      //     }
+      //   })
+      // }
+      getPhoto(id){
+        let that = this;
+        tip.loading();
+        wepy.request({
+          url: api.get_team_album + '?token=' +wx.getStorageSync('token'),
+          data: {
+            plid:id || that.plid
+          }
+        }).then(res => {
+          if(res.data.status == 200){
+            let data = res.data.data;
+            that.photo_album = data;
+            that.$apply();
+
+          }
+        })
+      }
+      getNotice(id){
+        let that = this;
+        tip.loading();
+        wepy.request({
+          url: api.get_notice + '?token=' +wx.getStorageSync('token'),
+          data: {
+            plid:id || that.plid
+          }
+        }).then(res => {
+          if(res.data.status == 200){
+            let data = res.data.data;
+            that.notice_list = data;
+            that.$apply();
+
+          }
+        })
+      }
+      getLoc(id){
+        let that = this;
+        tip.loading();
+        wepy.request({
+          url: api.get_member_location + '?token=' +wx.getStorageSync('token'),
+          data: {
+            plid:id || that.plid
+          }
+        }).then(res => {
+          if(res.data.status == 200){
+            let data = res.data.data;
+            // that.notice_list = data.data;
+            that.markers =[];
+            for(let i =0;i<data.length;i++){
+              let content = data[i].ustelphone ?`${data[i].usname}:${data[i].ustelphone}`: data[i].usname;
+              that.markers.push({
+                iconPath: data[i].isleader?`${that.img_src}index/marker-loc-active.png`:`${that.img_src}index/marker-loc.png`,
+                id: i,
+                latitude: data[i].latitude,
+                longitude: data[i].longitude,
+                width:data[i].isleader?35: 20,
+                height: data[i].isleader?35:20,
+                callout:{
+                  content:content,
+                  padding: 10
+                }
+              })
+              that.all_points.push({
+                latitude:data[i].latitude,
+                longitude:data[i].longitude
+              })
+            }
+
+            that.$apply();
+            tip.loaded();
+          }
+        })
+      }
+      getLocation(){
+        let that = this;
+        wx.getLocation({
+          type: 'wgs84',
+          success (res) {
+
+            that.latitude = res.latitude;
+            that.longitude = res.longitude;
+            that.all_points.push({
+              latitude:res.latitude,
+              longitude:res.longitude
+            });
+            that.$apply();
+          }
+        })
+
+      }
+      getData(id){
+        let that = this;
+        tip.loading();
+        wepy.request({
+          url: api.get_team_travelrecord +'?token='+wx.getStorageSync('token') ,
+          data: {
+            plid:id  || that.plid,
+            page_num:that.page_info.page_num,
+            page_size: that.page_info.page_size,
+          }
+        }).then(res => {
+          if(res.data.status == 200){
+            let data = res.data.data;
+            if(that.page_info.page_num >1){
+              that.list_data = that.list_data.concat(data);
+            }else{
+              that.list_data = data;
+            }
+            that.total_count = res.data.total_count;
+            that.$apply();
+            tip.loaded();
+          }
+        })
+      }
+        onLoad(options) {
+          if(options.plid){
+            this.plid = options.plid;
+            this.$apply();
+          }
+          this.img_src = api.img_src;
+          this.$apply();
+        }
+        onShow(){
+          let that = this;
+          if(wx.getStorageSync('token')){
+            this.getLocation();
+            that.getNotice();
+            that.getLoc();
+            that.getData();
+            that.getPhoto();
+            that.no_login = false;
+            that.$apply();
+          }
+
+        }
+          onUnload(){
+
+            this.gotoHomePage();
+
+          }
+          // 在订单详情 点击小程序的返回 自定其他跳页方法
+          gotoHomePage() {//自定义页面跳转方法
+            wx.switchTab({
+              url: '/pages/index/index',
+            });
+          }
+        methods = {
+          markertap(e){
+                // console.log(e)
+            },
+          lower(){
+            if(this.total_count > this.list_data.length) {
+              this.page_info.page_num += 1;
+              this.$apply();
+              this.getData();
+            }
+          },
+          changeTap(v){
+            this[v] = !this[v];
+            this.$apply();
+          },
+          changeModal(name,bool){
+
+            if(bool == 'true'){
+              this[name] = bool;
+            }else{
+              this[name] = false;
+            }
+            this.$apply();
+          },
+          changeRoute(v){
+            let that = this;
+            that.show_edit = false;
+            that.$apply();
+            wx.navigateTo({
+              url: v + '?plid=' + that.plid
+            });
+          },
+          playVideo(v){
+            this.show_video = true;
+            this.video_url = v.url;
+            this.$apply();
+          },
+          //预览图片
+          previewImage(item){
+            let that = this;
+            wx.previewImage({
+              current: item, // 当前显示图片的http链接
+              urls: [item] // 需要预览的图片http链接列表
+            })
+          },
+        }
+    }
+</script>

@@ -1,0 +1,208 @@
+<style scoped lang="less" rel="stylesheet/less">
+
+  .m-identification{
+    .m-row{
+      padding: 20rpx 30rpx;
+      border-bottom: 1px solid #F2F2F2;
+      display: flex;
+      flex-flow: row;
+      align-items: center;
+      justify-content: space-between;
+      &.m-no-flex{
+        display: block;
+      }
+      input{
+        text-align: right;
+      }
+      .m-img-box{
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: flex-start;
+        margin-right: 20rpx;
+        margin-top: 20rpx;
+        .m-img{
+          width: 301rpx;
+          height: 169rpx;
+          margin: 0 20rpx 0 20rpx;
+        }
+      }
+    }
+  }
+
+</style>
+<template>
+    <view class="m-identification" wx:if="{{img_src}}">
+      <login wx:if="{{no_login}}"></login>
+      <view class="m-row m-grey">认证信息</view>
+      <view class="m-row">
+        <span>真实姓名</span>
+        <input type="text" placeholder="请输入真实姓名" disabled="{{disabled}}"  value="{{form_data.usrealname}}" data-name="usrealname" bindinput="inputChange"/>
+      </view>
+      <view class="m-row">
+        <span>手机号</span>
+        <input type="number" placeholder="请输入手机号" disabled="{{disabled}}" value="{{form_data.ustelephone}}" data-name="ustelephone" bindinput="inputChange"/>
+      </view>
+      <view class="m-row">
+        <span>身份证号</span>
+        <input type="text" placeholder="请输入身份证号" disabled="{{disabled}}"  value="{{form_data.usidentification}}" data-name="usidentification" bindinput="inputChange"/>
+      </view>
+<!--      <view class="m-row m-no-flex">-->
+<!--        <view class="m-flex-between">-->
+<!--          <span>身份证照片</span>-->
+<!--          <span class="m-grey">选填</span>-->
+<!--        </view>-->
+<!--        <view class="m-img-box">-->
+<!--          <image src="{{form_data.guimg}}" alt="" wx:if="{{form_data.guimg}}" class="m-img"> </image>-->
+<!--          <image src="{{img_src}}common/icon-img-up.png" class="m-img"   @tap="uploadImg"></image>-->
+<!--        </view>-->
+<!--      </view>-->
+      <view class="m-foot-btn m-one" wx:if="{{!disabled}}" @tap="sureSubmit">提交审核</view>
+    </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import api from '../../api/api';
+  import tip from '../../utils/tip';
+  import Login from '../../components/common/noLogin';
+  export default class identification extends wepy.page {
+    config = {
+      navigationBarTitleText: '信用认证'
+    };
+    components = {login:Login};
+    data = {
+      img_src:null,
+      form_data:{
+        usrealname:'',
+        ustelephone:'',
+        usidentification:'',
+        guimg:''
+      },
+      ustelphone:'',
+      disabled:false,
+      no_login:true,
+    };
+    postData(){
+      let that = this;
+      tip.loading();
+      wepy.request({
+        url: api.user_certification + '?token=' +wx.getStorageSync('token'),
+        method:"post",
+        data:that.form_data
+      }).then(resule => {
+        if(resule.data.status == 200){
+          tip.success(resule.data.message);
+          that.disabled = true;
+          that.$apply();
+        }
+      })
+    }
+    getData(){
+      let that = this;
+      tip.loading();
+      wepy.request({
+        url: api.user_identification + '?token=' +wx.getStorageSync('token'),
+        method:"get",
+        data:{}
+      }).then(resule => {
+        if(resule.data.status == 200){
+          that.no_login = false;
+          if(resule.data.data.usrealname){
+            that.form_data = resule.data.data;
+            that.disabled = true;
+          }
+          that.$apply();
+        }
+      })
+    }
+    onLoad(options) {
+      this.img_src = api.img_src;
+      if(options.tel != 'undefined'){
+        this.ustelphone = options.tel || '';
+        this.form_data.ustelephone = options.tel || '';
+        this.$apply();
+      }
+
+    }
+    onShow(){
+      if(wx.getStorageSync('token')){
+        this.getData();
+      }
+
+    }
+    methods = {
+      inputChange(e){
+        let name = e.currentTarget.dataset.name;
+        this.form_data[name] = e.detail.value;
+        this.$apply();
+      },
+      //选择证明
+      uploadImg(){
+        let that = this;
+        // if(that.form_data.img){
+        //   return
+        // }
+        wx.chooseImage({
+          count: 1,
+          sizeType: ['original', 'compressed'],
+          sourceType: ['album', 'camera'],
+          success (res) {
+            // tempFilePath可以作为img标签的src属性显示图片
+            const tempFilePaths = res.tempFilePaths;
+            wx.uploadFile({
+              url: api.upload,
+              filePath: tempFilePaths[0],
+              name: 'file',
+              formData: {
+                token:wx.getStorageSync('token'),
+                type:'voucher'
+              },
+              success (res1){
+                // const data = res.data
+                let data = JSON.parse(res1.data);
+                //do something
+                that.form_data.guimg = api.api + data.data;
+                that.$apply();
+              }
+            })
+
+          }
+        })
+      },
+      sureSubmit(){
+        let that = this;
+        if(!this.form_data.usrealname){
+          tip.error('请填写真实姓名');
+          return;
+        }
+        if(!this.form_data.ustelephone){
+          tip.error('请填写手机号');
+          return;
+        }
+        if(!this.form_data.usidentification){
+          tip.error('请填写身份证号');
+          return;
+        }
+        if(this.form_data.ustelephone != this.ustelphone){
+          wx.showModal({
+            title: '提示',
+            content: '请确认填写手机号无误',
+            success (res) {
+              if (res.confirm) {
+                that.postData();
+              } else if (res.cancel) {
+                console.log('用户点击取消')
+              }
+            }
+          })
+
+        }else{
+
+          that.postData();
+        }
+
+      }
+    };
+  }
+</script>
