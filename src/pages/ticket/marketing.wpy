@@ -5,7 +5,7 @@
             position: relative;
             .m-marketing-bg{
                 width: 100%;
-                height: 300rpx;
+                height: 332rpx;
             }
             .m-top-content{
                 position: absolute;
