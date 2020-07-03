@@ -174,7 +174,7 @@
                 <view class="people-li" wx:for="{{team_list}}" wx:key="{{index}}">
                     <image src="{{item.usheader}}" class="people-img"></image>
                     <span>{{item.usname}}</span>
-                    <span class="num">{{item.order_list}}</span>
+                    <span class="num">{{item.team_number}}</span>
                 </view>
             </view>
             <view class="distribute-list" wx:if="{{select_nav.value == 2}}">
@@ -212,20 +212,7 @@
             enablePullDownRefresh:true
         }
         data = {
-            nav_list:[
-                {
-                    value:1,
-                    label:'团队管理'
-                },
-                {
-                    value:2,
-                    label:'人员分配'
-                },
-                {
-                    value:3,
-                    label:'升级审核'
-                }
-            ],
+            nav_list:[],
             select_nav :  {
                 value:1,
                 label:'团队管理'
@@ -259,6 +246,39 @@
             }
             if(options.ussuperlevel){
                 this.ussuperlevel = options.ussuperlevel
+                switch (options.ussuperlevel) {
+                    case 1:
+                        this.nav_list = [
+                            {
+                                value:1,
+                                label:'团队管理'
+                            },
+                            {
+                                value:2,
+                                label:'人员分配'
+                            },
+                            {
+                                value:3,
+                                label:'升级审核'
+                            }
+                        ]
+                        break
+                    case 2:
+                        this.nav_list = [
+                            {
+                                value:1,
+                                label:'团队管理'
+                            },
+                            {
+                                value:2,
+                                label:'人员分配'
+                            }
+                        ]
+                        break
+                    case 3:
+                        this.nav_list = []
+                        break
+                }
                 this.$apply()
             }
             this.getTop();

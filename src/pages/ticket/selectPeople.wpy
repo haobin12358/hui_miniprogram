@@ -56,6 +56,14 @@
                 this.$apply()
             },
             postData(){
+                if(!this.select_item.usid){
+                    wx.showToast({
+                        title: '请选择分配人员',
+                        icon: 'none',
+                        duration: 2000
+                    })
+                    return false
+                }
                 let that = this;
                 let arr = []
                 for(let i=0;i<that.all_data.distribute_list.length;i++){
