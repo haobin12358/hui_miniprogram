@@ -178,26 +178,26 @@
                 </view>
             </view>
             <view class="distribute-list" wx:if="{{select_nav.value == 2}}">
-                <view class="distribute-li" >
+                <view class="distribute-li" wx:for="{{distribute_list}}" wx:key="{{index}}">
                     <view class="m-flex-start">
-                        <image src="" class="people-img"></image>
-                        <span>13212</span>
+                        <image src="{{item.usheader}}" class="people-img"></image>
+                        <span>{{item.usname}}</span>
                     </view>
-                    <!--<image src="../../images/bottom/icon-radio-select.png" class="radio-icon-check"></image>-->
-                    <span class="radio-icon"></span>
+                    <image src="../../images/bottom/icon-radio-select.png" wx:if="{{item.check}}" @tap="radioChange({{index}})" class="radio-icon-check"></image>
+                    <span class="radio-icon" wx:else @tap="radioChange({{index}})"></span>
                 </view>
             </view>
         </view>
         <view class="distribute-bottom" wx:if="{{select_nav.value == 2}}">
             <view class="m-flex-start">
-                <image src="../../images/bottom/icon-radio-select.png" class="radio-icon-check"></image>
-                <!--<span class="radio-icon"></span>-->
-                <span>全选</span>
+                <image src="../../images/bottom/icon-radio-select.png" @tap="allRadio" wx:if="{{total_count == distribute_list.length}}" class="radio-icon-check"></image>
+                <span class="radio-icon" @tap="allRadio" wx:else></span>
+                <span >全选</span>
             </view>
 
             <view class="distribute-bottom-right m-flex-end">
-                <span>已选择1人</span>
-                <view class="distribute-bottom-btn">分配至</view>
+                <span>已选择{{total_count}}人</span>
+                <view class="distribute-bottom-btn" @tap="changeRoute('/pages/ticket/selectPeople')">分配至</view>
             </view>
         </view>
     </view>
@@ -232,23 +232,37 @@
             },
             top_info: {},
             team_list:[],
-            ussuperlevel:null
+            distribute_list:[],
+            ussuperlevel:null,
+            show_select:false,
+            total_count:0
         }
         onPullDownRefresh() {
             // 上拉刷新
             if (!this.loading) {
                 this. getTop();
-                this.getData()
+                this.getTeam()
                 // 处理完成后，终止下拉刷新
             }
         }
         onLoad(options){
+            let data;
+            if(options.data){
+                data = JSON.parse(decodeURIComponent(options.data));
+                this.select_nav = data.select_nav;
+                this.distribute_list =data.distribute_list;
+                this.team_list = data.team_list;
+                this.top_info = data.top_info;
+                this.show_select = data.show_select;
+                this.total_count = data.total_count;
+                this.ussuperlevel = data.ussuperlevel;
+            }
             if(options.ussuperlevel){
                 this.ussuperlevel = options.ussuperlevel
                 this.$apply()
             }
             this.getTop();
-            this.getData()
+            this.getTeam()
         }
         onShow(){
         }
@@ -268,7 +282,7 @@
                 }
             })
         }
-        getData(){
+        getTeam(){
             let that = this;
 
             wepy.request({
@@ -282,6 +296,32 @@
                 }
             })
         }
+        getDistribute(){
+            let that = this;
+            wepy.request({
+                url: api.get_share_list + '?token=' +wx.getStorageSync('token'),
+                method:"get",
+                data:{}
+            }).then(res => {
+                if(res.data.status == 200){
+                    that.distribute_list = res.data.data;
+                    for(let i=0;i<that.distribute_list.length;i++){
+                        that.distribute_list[i].check = false
+                    }
+                    that.$apply();
+                }
+            })
+        }
+        navSelect(){
+            switch (this.select_nav.value) {
+                case 1:
+                    this.getTeam();
+                    break;
+                case 2:
+                    this.getDistribute();
+                    break
+            }
+        }
         methods = {
             navTap(item){
                 this.select_nav = item;
@@ -289,17 +329,43 @@
                 this.$apply();
                 this.navSelect();
             },
-            navSelect(){
-                switch (this.select_nav.value) {
-                    case 1:
-                        this.getData();
-                        break
-                }
+
+            radioChange(index) {
+                this.distribute_list[index].check = !this.distribute_list[index].check
+                this.distribute_list[index].check ? (this.total_count =this.total_count + 1) : (this.total_count =this.total_count - 1)
+                this.$apply()
             },
-            radioChange() {
+            allRadio(){
+                if(this.total_count == this.distribute_list.length){
+                    for(let i=0;i<this.distribute_list.length;i++){
+                        this.distribute_list[i].check = false
+                    }
+                    this.total_count = 0
+                }else{
+                    for(let i=0;i<this.distribute_list.length;i++){
+                        this.distribute_list[i].check = true
+                    }
+                    this.total_count = this.distribute_list.length
+                }
+                this.$apply()
+            },
+//路由
+            changeRoute(v){
+                let that = this;
+                if(!that.total_count){
+                    wx.showToast({
+                        title: '请选择待分配人员',
+                        icon: 'none',
+                        duration: 2000
+                    })
+                    return
+                }
+                wx.navigateTo({
+                    url: v + `?data=${encodeURIComponent(JSON.stringify(that.data))}`
+                });
 
 
-            }
+            },
 
         }
 

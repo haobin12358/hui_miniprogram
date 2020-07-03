@@ -36,6 +36,9 @@ const get_params = api2 + 'play/get_params';//
 
 const get_subcommision_index = api2 + 'subcommision/get_subcommision_index';//营销管理头部数据
 const get_user_team = api2 + 'subcommision/get_user_team'; //获取团队管理列表
+const get_distribute_list = api2 + 'subcommision/get_distribute_list';//获取待分配列表
+const get_share_list =  api2 + 'subcommision/get_share_list';//获取待分配人员列表
+const mock_distribute_user = api2 + "subcommision/mock_distribute_user";//分配
 
 const img_src = 'https://tickets.sanbinit.cn/icon/';
 
@@ -45,7 +48,7 @@ const img_src = 'https://tickets.sanbinit.cn/icon/';
 module.exports = {
   api,img_src,login,bind_phone,product_list,product_get,order_pay,product_get_promotion,get_home,update_usinfo,my_wallet,apply_cash,list_omstatus,order_list,
   order_list_trade,user_certification,product_verify,list_mp_banner,user_identification,order_get,secret_usid,get_params,get_subcommision_index,
-  get_user_team
+  get_user_team,get_distribute_list,get_share_list,mock_distribute_user
 
 
 
