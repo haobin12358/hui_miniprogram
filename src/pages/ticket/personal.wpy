@@ -33,8 +33,8 @@
                 }
                 .m-icon-code{
                     display: inline-block;
-                    width: 50rpx;
-                    height: 50rpx;
+                    width: 60rpx;
+                    height: 60rpx;
                 }
             }
         }

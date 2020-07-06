@@ -304,20 +304,7 @@
             enablePullDownRefresh:true
         }
         data = {
-            nav_list:[
-                {
-                    value:1,
-                    label:'团队管理'
-                },
-                {
-                    value:2,
-                    label:'人员分配'
-                },
-                {
-                    value:3,
-                    label:'升级审核'
-                }
-            ],
+            nav_list:[],
             select_nav :  {
                 value:1,
                 label:'团队管理'

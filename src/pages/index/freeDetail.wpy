@@ -92,6 +92,19 @@
       }
     }
   }
+    .scores-rule{
+        color: #999;
+        margin-bottom: 20rpx;
+        .rule-item{
+            width: 50%;
+        }
+    }
+    .icon{
+        width: 38rpx;
+        height: 38rpx;
+        margin-right: 8rpx;
+        flex-shrink:0;
+    }
   .m-freeDetail-content{
       font-family:PingFangSC-Regular,PingFang SC;
       padding: 20rpx 30rpx;
@@ -125,19 +138,7 @@
                   margin-left: 16rpx;
               }
           }
-          .icon{
-              width: 38rpx;
-              height: 38rpx;
-              margin-right: 8rpx;
-              flex-shrink:0;
-          }
-          .scores-rule{
-              color: #999;
-              margin-bottom: 20rpx;
-              .rule-item{
-                  width: 50%;
-              }
-          }
+
           .use-time{
               color: #999;
               align-items: flex-start;
@@ -150,6 +151,7 @@
               }
           }
       }
+
     .m-detail-info{
       .m-red{
         font-size: 32rpx;
@@ -556,6 +558,12 @@
                   <view class="time">{{detail.prusestarttime}}-{{detail.pruseendtime}} 期间工作日节假日均可使用</view>
               </view>
           </view>
+      <view class="scores-rule m-flex-start" wx:if="{{detail.prtimelimeted == 0}}">
+          <view class="m-flex-start rule-item" @tap.stop="changeModal('show_rule',true,'tirules')">
+              <image src="{{img_src}}index/buy-rule.png" class="icon"></image>
+              <view>购买须知</view>
+          </view>
+      </view>
         <view class="m-detail-info">
           <view class="m-name">{{detail.prname}}</view>
             <view class="m-price">￥<span class="m-bold">{{detail.prtrueprice}}</span></view>
