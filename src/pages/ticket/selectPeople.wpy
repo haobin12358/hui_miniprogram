@@ -51,7 +51,6 @@
         methods ={
 
             radioChange(index) {
-                console.log(index)
                 this.select_item = this.distribute_list[index]
                 this.$apply()
             },
