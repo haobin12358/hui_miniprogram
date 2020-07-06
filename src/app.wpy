@@ -171,7 +171,7 @@
               // return;
             }
 
-              if(p.data.status_code != 405014){
+              if(p.data.status_code != 405014 && p.data.message){
                   tip.error(p.data.message);
               }
           }
