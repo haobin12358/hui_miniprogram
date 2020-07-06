@@ -949,10 +949,10 @@
 
       }
       let that = this;
-      let params = `?page=/pages/index/freeDetail&tiid=${that.tiid}&secret_usid=${that.secret_usid}`
+      let params = `?page=/pages/index/freeDetail&prid=${that.prid}&secret_usid=${that.secret_usid}`
       // let params = '?scene=params=259'
       return {
-        title: '邀请你免费试玩'+ that.detail.tiname,
+        title: '邀请你购买'+ that.detail.prname,
         path: '/pages/ticket/index'+params,
         success: function (res) {
           console.log('成功', res)
