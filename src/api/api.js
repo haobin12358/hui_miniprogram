@@ -1,13 +1,13 @@
 
 
-// const api2 = 'https://tickets.sanbinit.cn/api/' ;
-const api2 = 'https://beta.tickets.sanbinit.cn/api/'
+const api2 = 'https://tickets.dingdingn.com/api/' ;
+// const api2 = 'https://beta.tickets.sanbinit.cn/api/'
 // const api2 = 'https://pre2.bigxingxing.com/api/v2/';
 // const api2 = 'https://www.bigxingxing.com/api/v2/';
 
 
-// const api = 'https://tickets.sanbinit.cn' ;
-const api = 'https://beta.tickets.sanbinit.cn'
+const api = 'https://tickets.dingdingn.com' ;
+// const api = 'https://beta.tickets.sanbinit.cn'
 // const api = 'https://pre2.bigxingxing.com';
 // const api = 'https://www.bigxingxing.com';
 //登录 注册
@@ -42,7 +42,7 @@ const mock_distribute_user = api2 + "subcommision/mock_distribute_user";//分配
 const get_approval_list = api2 + 'subcommision/get_approval_list'; //获取升级审批流列表
 const mock_approval = api2 + 'subcommision/mock_approval'; //审批升级情况
 
-const img_src = 'https://tickets.sanbinit.cn/icon/';
+const img_src = 'https://tickets.dingdingn.com/icon/';
 
 // const img_src = 'https://www.bigxingxing.com/icon/';
 // const img_src = '../../images/';

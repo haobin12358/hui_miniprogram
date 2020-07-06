@@ -141,7 +141,7 @@
         </view>
         <view class="m-personal-item">
             <ul >
-                <li  @tap="toDistribute('/pages/ticket/marketing')" wx:if="{{user_info.ussuperlevel != 0}}">
+                <li  @tap="toDistribute('/pages/ticket/marketing')" wx:if="{{user_info.ussuperlevel && user_info.ussuperlevel != 0}}">
                     <view class="m-flex-start">
                         <image src="../../images/bottom/icon-marketing.png" wx:if="{{img_src}}"  class="m-icon"></image>
                         <span>营销管理</span>
@@ -278,6 +278,12 @@
                 });
             },
             toDistribute(path){
+                if(wx.getStorageSync('bind_phone') == 'false'){
+                    this.show_tel = true;
+                    this.url = path;
+                    this.$apply();
+                    return;
+                }
                 let that = this
                 wx.navigateTo({
                     url: path + '?ussuperlevel=' + that.user_info.ussuperlevel
