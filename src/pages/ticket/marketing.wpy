@@ -60,8 +60,8 @@
         .m-marketing-content{
             font-size: 32rpx;
             padding: 0 32rpx;
-            .people-list{
-                .people-li{
+            .marketing-list{
+                .marketing-li{
                     display: flex;
                     flex-flow: row;
                     align-items: center;
@@ -72,23 +72,28 @@
                         height: 72rpx;
                         border-radius: 50%;
                     }
-                }
-            }
-            .distribute-list{
-                .distribute-li{
-                    display: flex;
-                    flex-flow: row;
-                    align-items: center;
-                    justify-content: space-between;
-                    padding: 10rpx 0;
-                    .people-img{
-                        width: 72rpx;
-                        height: 72rpx;
-                        border-radius: 50%;
-                        margin-right: 20rpx;
+                    .usname{
+                        max-width: 420rpx;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        word-break: break-all;
+                    }
+                    .audit-btn-box{
+                        .audit-btn{
+                            display: block;
+                            width: 96rpx;
+                            height: 48rpx;
+                            line-height: 48rpx;
+                            text-align: center;
+                            border-radius: 24rpx;
+                            background-color: #FECE06;
+                            margin-left: 40rpx;
+                        }
                     }
                 }
             }
+
         }
         .radio-icon{
             display: block;
@@ -132,6 +137,67 @@
                 }
             }
         }
+        .audit-modal{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0,0,0,0.16);
+            .audit-modal-state{
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background-color: #fff;
+                border-radius: 40rpx 40rpx 0 0;
+                padding: 32rpx;
+                box-sizing: border-box;
+                text-align: center;
+                .audit-title{
+                    font-size: 32rpx;
+                    font-weight: 500;
+                }
+                .audit-content{
+                    display: flex;
+                    flex-flow: row;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin: 64rpx 0;
+                    .people-img{
+                        width: 72rpx;
+                        height: 72rpx;
+                        border-radius: 50%;
+                    }
+                    .usname{
+                        max-width: 420rpx;
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        word-break: break-all;
+                    }
+                }
+                .audit-btn{
+                    display: flex;
+                    flex-flow: row;
+                    align-items: center;
+                    justify-content: space-between;
+                    .audit-one-btn{
+                        width:336rpx;
+                        height:80rpx;
+                        line-height: 80rpx;
+                        background:#F44336;
+                        border-radius:16rpx;
+                        color: #fff;
+                        font-weight: 500;
+                        font-size: 32rpx;
+                        &.active{
+                            background:rgba(0,211,3,1);
+                        }
+                    }
+                }
+            }
+        }
     }
 </style>
 
@@ -170,21 +236,32 @@
             <view class="m-nav">
                 <span class="{{item.value == select_nav.value ? 'active':''}}" wx:for="{{nav_list}}" wx:key="{{index}}" @tap="navTap({{item}})">{{item.label}}</span>
             </view>
-            <view class="people-list" wx:if="{{select_nav.value == 1}}">
-                <view class="people-li" wx:for="{{team_list}}" wx:key="{{index}}">
+            <view class="marketing-list" wx:if="{{select_nav.value == 1}}">
+                <view class="marketing-li" wx:for="{{team_list}}" wx:key="{{index}}">
                     <image src="{{item.usheader}}" class="people-img"></image>
-                    <span>{{item.usname}}</span>
+                    <span class="usname">{{item.usname}}</span>
                     <span class="num">{{item.team_number}}</span>
                 </view>
             </view>
-            <view class="distribute-list" wx:if="{{select_nav.value == 2}}">
-                <view class="distribute-li" wx:for="{{distribute_list}}" wx:key="{{index}}">
+            <view class="marketing-list" wx:if="{{select_nav.value == 2}}">
+                <view class="marketing-li" wx:for="{{distribute_list}}" wx:key="{{index}}">
                     <view class="m-flex-start">
                         <image src="{{item.usheader}}" class="people-img"></image>
-                        <span>{{item.usname}}</span>
+                        <span class="usname">{{item.usname}}</span>
                     </view>
                     <image src="../../images/bottom/icon-radio-select.png" wx:if="{{item.check}}" @tap="radioChange({{index}})" class="radio-icon-check"></image>
                     <span class="radio-icon" wx:else @tap="radioChange({{index}})"></span>
+                </view>
+            </view>
+            <view class="marketing-list" wx:if="{{select_nav.value == 3}}">
+                <view class="marketing-li" wx:for="{{audit_list}}" wx:key="{{index}}">
+                    <image src="{{item.usheader}}" class="people-img"></image>
+                    <span class="usname">{{item.usname}}</span>
+                    <view class="audit-btn-box m-flex-end">
+                        <span>{{item.team_number}}</span>
+                        <span class="audit-btn" @tap="showAudit({{item}})">审核</span>
+                    </view>
+
                 </view>
             </view>
         </view>
@@ -200,6 +277,21 @@
                 <view class="distribute-bottom-btn" @tap="changeRoute('/pages/ticket/selectPeople')">分配至</view>
             </view>
         </view>
+
+        <view class="audit-modal" wx:if="{{show_audit}}" @tap.self="closeModal">
+            <view class="audit-modal-state" @tap.stop="stateTap">
+                <view class="audit-title">升级事项</view>
+                <view class="audit-content">
+                    <image src="{{audit_item.usheader}}" class="people-img"></image>
+                    <span class="usname">{{audit_item.usname}}</span>
+                    <span>{{audit_item.team_number}}</span>
+                </view>
+                <view class="audit-btn ">
+                    <view class="audit-one-btn" @tap="dealAudit('refuse')">拒绝</view>
+                    <view class="audit-one-btn active" @tap="dealAudit('access')">通过</view>
+                </view>
+            </view>
+        </view>
     </view>
 </template>
 <script >
@@ -212,7 +304,20 @@
             enablePullDownRefresh:true
         }
         data = {
-            nav_list:[],
+            nav_list:[
+                {
+                    value:1,
+                    label:'团队管理'
+                },
+                {
+                    value:2,
+                    label:'人员分配'
+                },
+                {
+                    value:3,
+                    label:'升级审核'
+                }
+            ],
             select_nav :  {
                 value:1,
                 label:'团队管理'
@@ -220,9 +325,12 @@
             top_info: {},
             team_list:[],
             distribute_list:[],
-            ussuperlevel:null,
+            audit_list:[],
+            ussuperlevel:3,
             show_select:false,
-            total_count:0
+            total_count:0,
+            show_audit:false,
+            audit_item:null
         }
         onPullDownRefresh() {
             // 上拉刷新
@@ -284,6 +392,7 @@
             }
             this.getTop();
             this.getTeam()
+
         }
         onShow(){
         }
@@ -333,6 +442,19 @@
                 }
             })
         }
+        getAudit(){
+            let that = this;
+            wepy.request({
+                url: api.get_approval_list + '?token=' +wx.getStorageSync('token'),
+                method:"get",
+                data:{}
+            }).then(res => {
+                if(res.data.status == 200){
+                    that.audit_list = res.data.data;
+                    that.$apply();
+                }
+            })
+        }
         navSelect(){
             switch (this.select_nav.value) {
                 case 1:
@@ -340,6 +462,9 @@
                     break;
                 case 2:
                     this.getDistribute();
+                    break
+                case 3:
+                    this.getAudit()
                     break
             }
         }
@@ -387,6 +512,42 @@
 
 
             },
+            showAudit(item){
+                this.show_audit = true
+                this.audit_item = item
+                this.$apply()
+            },
+            dealAudit(type){
+                let that = this;
+                wepy.request({
+                    url: api.mock_approval + '?token=' +wx.getStorageSync('token'),
+                    method:"post",
+                    data:{
+                        avid:that.audit_item.avid,
+                        avstatus: type
+                    }
+                }).then(res => {
+                    if(res.data.status == 200){
+                        wx.showToast({
+                            title: res.data.message,
+                            icon: 'success',
+                            duration: 2000
+                        })
+                        that.show_audit = false
+                        that.audit_item = null
+                        that.$apply();
+                        that.getAudit()
+                    }
+                })
+            },
+            closeModal(){
+                this.show_audit = false
+                this.audit_item = null
+                this.$apply();
+            },
+            stateTap(){
+                return false
+            }
 
         }
 

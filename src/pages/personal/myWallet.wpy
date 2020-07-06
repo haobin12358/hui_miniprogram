@@ -139,6 +139,11 @@
           id: 2,
           name: '佣金收入',
           value:'commission'
+        },
+        {
+          id: 3,
+          name: '奖励金',
+          value:'reward'
         }
       ],
       index:0,

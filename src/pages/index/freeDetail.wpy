@@ -864,7 +864,7 @@
         params = {
           prid: that.detail.prid,
           ompaytype:Number(num),
-            secret_usid: wx.getStorageSync('secret_usid')
+            shareid: wx.getStorageSync('secret_usid')
         }
 
       wepy.request({
