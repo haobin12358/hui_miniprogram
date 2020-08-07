@@ -735,7 +735,7 @@
             that.$invoke('htmlParser', 'htmlParserNotice');
             that.$invoke('htmlParser1', 'htmlParserNotice');
 
-          if(that.detail.prstatus <2 ){
+          if(that.detail.prstatus <2 && that.detail.prtimelimeted == 1){
             that.dealTime();
           }
           if(that.detail.show_record){
@@ -792,9 +792,9 @@
         var date = new Date();
         var now = date.getTime();
         let endDate;
-        if(that.detail.prstatus == 0){
+        if(that.detail.prstatus == 0 && that.detail.prissuestarttime){
           endDate = new Date(that.detail.prissuestarttime.replace(/-/g, "/"));//设置截止时间
-        }else if(that.detail.prstatus == 1){
+        }else if(that.detail.prstatus == 1 && that.detail.prissueendtime){
           endDate = new Date(that.detail.prissueendtime.replace(/-/g, "/"));//设置截止时间
         }
         var end = endDate.getTime();
@@ -959,6 +959,25 @@
         }
       }
     }
+      onShareTimeline(res) {
+          if (res.from === 'button') {
+
+          }
+          let that = this;
+          let params = `?page=/pages/index/freeDetail&prid=${that.prid}&secret_usid=${that.secret_usid}`
+          // let params = '?scene=params=259'
+          return {
+              title: '邀请你购买'+ that.detail.prname,
+              // path: '/pages/ticket/index'+params,
+              query:{
+                  page:`/pages/index/freeDetail&prid=${that.prid}&secret_usid=${that.secret_usid}`
+              },
+              imageUrl: that.detail.primg,
+              success: function (res) {
+                  console.log('成功', res)
+              }
+          }
+      }
     onLoad(options) {
       if(options.prid){
         this.prid = options.prid;

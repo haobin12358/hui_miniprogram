@@ -70,13 +70,13 @@
                         left:0;
                         /*background-color: rgba(0,0,0,0.2);*/
                         width: 330rpx;
-                        height: 460rpx;
+                        height: 185rpx;
                         border-radius:16rpx;
                     }
                 }
                 .m-ticket-img{
                     width: 330rpx;
-                    height: 460rpx;
+                    height: 185rpx;
                     border-radius:16rpx;
                 }
                 .m-ticket-name{
@@ -222,7 +222,7 @@
         <view class="m-product-content">
             <view class="activity-product">
                 <view class="product" wx:for="{{activity_list}}" wx:key="{{index}}" @tap="changeRoute('/pages/index/freeDetail',{{item}})">
-                    <image src="{{item.primg}}" class="m-ticket-img"></image>
+                    <image src="{{item.primg}}" mode="aspectFill" class="m-ticket-img"></image>
                     <view class="m-ticket-num">
                         <view class="m-ticket-name">{{item.prname}}</view>
                         <view class="m-ticket-price"><s>¥{{item.prlineprice}}</s></view>
@@ -239,7 +239,7 @@
             <view class="m-ticket-list">
                 <view class="m-one-ticket" wx:for="{{data_list}}" wx:key="{{index}}" @tap="changeRoute('/pages/index/freeDetail',{{item}})">
                     <view class="m-img-box">
-                        <image src="{{item.primg}}" class="m-ticket-img"></image>
+                        <image src="{{item.primg}}" mode="aspectFill" class="m-ticket-img"></image>
                         <!--<image src="{{img_src}}personal/img-end-new.png" class="m-end-img" wx:if="{{item.prstatus > 1}}"></image>-->
                         <!--<image src="{{img_src}}personal/img-start-new.png" class="m-end-img" wx:if="{{item.prstatus == 0}}"></image>-->
                     </view>
